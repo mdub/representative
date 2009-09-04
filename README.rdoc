@@ -1,7 +1,0 @@
-= representative
-
-Description goes here.
-
-== Copyright
-
-Copyright (c) 2009 Mike Williams. See LICENSE for details.
