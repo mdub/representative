@@ -2,8 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 require "representative/xml"
 
-gem "mdub-crack"
-require "crack"
+require "rexml/document"
 
 describe Representative::Xml do
 
@@ -157,10 +156,11 @@ describe Representative::Xml do
         
         it "attaches attributes to the array element" do
           represent.list_of!(:nick_names, :color => "blue", :size => :size)
-          Crack::XML.parse(resulting_xml)["nick_names"].attributes.should == {
-            "color" => "blue",
-            "size" => "2"
-          }
+          array_element_attributes = REXML::Document.new(resulting_xml).root.attributes
+          array_element_attributes.size.should == 3
+          array_element_attributes["type"].should == "array"
+          array_element_attributes["color"].should == "blue"
+          array_element_attributes["size"].should == "2"
         end
         
       end
