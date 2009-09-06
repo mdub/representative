@@ -2,13 +2,16 @@ require "rubygems"
 require "rake"
 
 begin
+  
   require "jeweler"
+  
   Jeweler::Tasks.new do |gem|
     gem.name = "representative"
     gem.summary = "Builds XML representations of your Ruby objects"
     gem.email = "mdub@dogbiscuit.org"
     gem.homepage = "http://github.com/mdub/representative"
     gem.authors = ["Mike Williams"]
+    gem.add_dependency("activesupport", ">= 2.2.2")
   end
 
 rescue LoadError
