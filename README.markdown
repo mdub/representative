@@ -3,7 +3,7 @@ Representative
 
 "Representative" makes it easier to create XML representations of your Ruby objects.
 It works best when you want the XML to roughly follow the object structure, 
-but still provides complete control of the result.
+but still have complete control of the result.
 
 Example
 -------
