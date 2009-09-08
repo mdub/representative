@@ -15,17 +15,23 @@ module Representative
       if name.to_s =~ /!$/
         super
       else
-        attribute!(name, *args, &block)
+        property!(name, *args, &block)
       end
     end
 
-    def attribute!(attribute_name, *args, &block)
-      options = args.extract_options!
-      value_generator = args.empty? ? attribute_name : args.shift
+    def property!(property_name, *args, &block)
+
+      attributes = args.extract_options!
+      value_generator = args.empty? ? property_name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
+
+      element_name = property_name.to_s.dasherize
+
       value = resolve(value_generator)
-      tag_name = attribute_name.to_s.dasherize
-      element!(tag_name, value, resolve_options(options, value), &block)
+      resolved_attributes = resolve_attributes(attributes, value)
+
+      element!(element_name, value, resolved_attributes, &block)
+
     end
 
     def element!(element_name, value, options, &block)
@@ -41,19 +47,25 @@ module Representative
       @xml.tag!(element_name, *tag_args, &content_generator)
     end
 
-    def list_of!(attribute_name, *args, &block)
+    def list_of!(property_name, *args, &block)
+
       options = args.extract_options!
-      list_tag_name = attribute_name.to_s.dasherize
+      value_generator = args.empty? ? property_name : args.shift
+      raise ArgumentError, "too many arguments" unless args.empty?
+
+      list_name = property_name.to_s.dasherize
       list_attributes = options[:list_attributes] || {}
-      item_tag_name = options[:item_name] || list_tag_name.singularize
-      value_generator = args.empty? ? attribute_name : args.shift
+      item_name = options[:item_name] || list_name.singularize
+
       items = resolve(value_generator)
-      list_tag_options = resolve_options(list_attributes, items).merge(:type => "array")
-      @xml.tag!(list_tag_name, list_tag_options) do
+      resolved_list_attributes = resolve_attributes(list_attributes, items)
+
+      @xml.tag!(list_name, resolved_list_attributes.merge(:type => "array")) do
         items.each do |item|
-          element!(item_tag_name, item, {}, &block)
+          element!(item_name, item, {}, &block)
         end
       end
+
     end
 
     private 
@@ -66,9 +78,9 @@ module Representative
       end
     end
 
-    def resolve_options(options, subject)
-      if options
-        options.inject({}) do |resolved, (k,v)|
+    def resolve_attributes(attributes, subject)
+      if attributes
+        attributes.inject({}) do |resolved, (k,v)|
           resolved_value = resolve(v, subject)
           resolved[k.to_s.dasherize] = resolved_value unless resolved_value.nil?
           resolved
