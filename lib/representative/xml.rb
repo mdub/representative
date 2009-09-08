@@ -43,11 +43,12 @@ module Representative
 
     def list_of!(attribute_name, *args, &block)
       options = args.extract_options!
+      list_tag_name = attribute_name.to_s.dasherize
+      list_attributes = options[:list_attributes] || {}
+      item_tag_name = options[:item_name] || list_tag_name.singularize
       value_generator = args.empty? ? attribute_name : args.shift
       items = resolve(value_generator)
-      list_tag_name = attribute_name.to_s.dasherize
-      list_tag_options = resolve_options(options, items).merge(:type => "array")
-      item_tag_name = list_tag_name.singularize
+      list_tag_options = resolve_options(list_attributes, items).merge(:type => "array")
       @xml.tag!(list_tag_name, list_tag_options) do
         items.each do |item|
           element!(item_tag_name, item, {}, &block)

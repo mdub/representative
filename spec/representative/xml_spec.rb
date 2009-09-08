@@ -152,19 +152,26 @@ describe Representative::Xml do
         resulting_xml.should == %(<nick-names type="array"><nick-name>Freddie</nick-name><nick-name>Knucklenose</nick-name></nick-names>)
       end
 
-      describe "with an attributes Hash" do
+      describe "with :list_attributes" do
         
         it "attaches attributes to the array element" do
-          represent.list_of!(:nick_names, :color => "blue", :size => :size)
+          represent.list_of!(:nick_names, :list_attributes => {:color => "blue", :size => :size})
           array_element_attributes = REXML::Document.new(resulting_xml).root.attributes
-          array_element_attributes.size.should == 3
           array_element_attributes["type"].should == "array"
           array_element_attributes["color"].should == "blue"
           array_element_attributes["size"].should == "2"
+          array_element_attributes.size.should == 3
         end
         
       end
-      
+
+      describe "with an explicit :item_name" do
+        it "uses the name provided" do
+          represent.list_of!(:nick_names, :item_name => :nick)
+          resulting_xml.should == %(<nick-names type="array"><nick>Freddie</nick><nick>Knucklenose</nick></nick-names>)
+        end
+      end
+
       describe "with a block" do
 
         it "generates a nested element for each list element" do
