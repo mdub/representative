@@ -19,6 +19,10 @@ module Representative
       end
     end
 
+    def subject!
+      @subject
+    end
+    
     def property!(property_name, *args, &block)
 
       attributes = args.extract_options!
@@ -56,13 +60,15 @@ module Representative
       list_name = property_name.to_s.dasherize
       list_attributes = options[:list_attributes] || {}
       item_name = options[:item_name] || list_name.singularize
+      item_attributes = options[:item_attributes] || {}
 
       items = resolve(value_generator)
       resolved_list_attributes = resolve_attributes(list_attributes, items)
 
       @xml.tag!(list_name, resolved_list_attributes.merge(:type => "array")) do
         items.each do |item|
-          element!(item_name, item, {}, &block)
+          resolved_item_attributes = resolve_attributes(item_attributes, item)
+          element!(item_name, item, resolved_item_attributes, &block)
         end
       end
 

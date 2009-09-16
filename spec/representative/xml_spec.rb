@@ -165,6 +165,15 @@ describe Representative::Xml do
         
       end
 
+      describe "with :item_attributes" do
+
+        it "attaches attributes to each item element" do
+          represent.list_of!(:nick_names, :item_attributes => {:length => :size})
+          resulting_xml.should == %(<nick-names type="array"><nick-name length="7">Freddie</nick-name><nick-name length="11">Knucklenose</nick-name></nick-names>)
+        end
+        
+      end
+
       describe "with an explicit :item_name" do
         it "uses the name provided" do
           represent.list_of!(:nick_names, :item_name => :nick)
@@ -181,6 +190,17 @@ describe Representative::Xml do
           resulting_xml.should == %(<nick-names type="array"><nick-name><length>7</length></nick-name><nick-name><length>11</length></nick-name></nick-names>)
         end
 
+      end
+
+      describe "with :item_attributes AND block" do
+        
+        it "generates attributes and nested elements" do
+          represent.list_of!(:nick_names, :item_attributes => {:length => :size}) do |nick_name|
+            nick_name.reverse
+          end
+          resulting_xml.should == %(<nick-names type="array"><nick-name length="7"><reverse>eidderF</reverse></nick-name><nick-name length="11"><reverse>esonelkcunK</reverse></nick-name></nick-names>)
+        end
+        
       end
 
     end
