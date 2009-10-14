@@ -1,9 +1,20 @@
 require "rubygems"
 require "rake"
+require "rake/clean"
 
-begin
-  
-  require "jeweler"
+task :default => :spec
+
+def with_gem(gem_name, lib = gem_name)
+  begin
+    require(lib)
+  rescue LoadError
+    $stderr.puts "WARNING: can't load #{lib}.  Install it with: sudo gem install #{gem_name}"
+    return false
+  end
+  yield
+end
+
+with_gem "jeweler" do
   
   Jeweler::Tasks.new do |gem|
     gem.name = "representative"
@@ -13,9 +24,9 @@ begin
     gem.authors = ["Mike Williams"]
     gem.add_dependency("activesupport", ">= 2.2.2")
   end
+  
+  Jeweler::GemcutterTasks.new
 
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
 require "spec/rake/spectask"
@@ -27,23 +38,15 @@ end
 
 Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
   spec.rcov = true
 end
 
-task :default => :spec
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION.yml')
-    config = YAML.load(File.read('VERSION.yml'))
-    version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
-  else
-    version = ""
-  end
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "representative #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
+# with_gem "yard" do
+# 
+#   YARD::Rake::YardocTask.new(:yardoc) do |t|
+#     t.files   = FileList['lib/**/*.rb']
+#   end
+#   CLEAN << "doc"
+# 
+# end
