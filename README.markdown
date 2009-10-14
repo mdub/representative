@@ -87,7 +87,7 @@ Notice that:
 
 - Representative generates elements for each object-attribute you name (and not the ones you don't).
 - The structure of the XML mirrors the structure described by the nested Ruby blocks.
-- Using **list_of!** for a collection attribute generates an "array" element, which plays nicely
+- Using `list_of!` for a collection attribute generates an "array" element, which plays nicely
   with most Ruby XML-to-hash converters.
 - Where a named object-attribute is nil, you get an empty element.
 

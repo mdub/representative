@@ -42,11 +42,11 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-# with_gem "yard" do
-# 
-#   YARD::Rake::YardocTask.new(:yardoc) do |t|
-#     t.files   = FileList['lib/**/*.rb']
-#   end
-#   CLEAN << "doc"
-# 
-# end
+with_gem "yard" do
+
+  YARD::Rake::YardocTask.new(:yardoc) do |t|
+    t.files   = FileList['lib/**/*.rb']
+  end
+  CLEAN << "doc"
+
+end
