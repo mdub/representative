@@ -91,7 +91,16 @@ Notice that:
   with most Ruby XML-to-hash converters.
 - Where a named object-attribute is nil, you get an empty element.
 
+Installation
+------------
+
+Representative is packaged as a Gem, hosting on [gemcutter].  Install with:
+
+    sudo gem install representative --source http://gemcutter.org
+
 Copyright
 ---------
 
 Copyright (c) 2009 Mike Williams. See LICENSE for details.
+
+[gemcutter]: http://gemcutter.org/
