@@ -94,7 +94,7 @@ Notice that:
 Installation
 ------------
 
-Representative is packaged as a Gem, hosting on [gemcutter].  Install with:
+Representative is packaged as a Gem, hosted on [gemcutter](http://gemcutter.org/gems/representative).  Install with:
 
     sudo gem install representative --source http://gemcutter.org
 
@@ -102,5 +102,3 @@ Copyright
 ---------
 
 Copyright (c) 2009 Mike Williams. See LICENSE for details.
-
-[gemcutter]: http://gemcutter.org/
