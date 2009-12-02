@@ -138,6 +138,16 @@ describe Representative::Xml do
         end
 
       end
+      
+      describe "with Representative::Empty" do
+
+        it "generates an empty element" do
+          @subject.vehicle = OpenStruct.new(:year => "1959", :make => "Chevrolet")
+          represent.vehicle(:year => :year, &Representative::EMPTY)
+          resulting_xml.should == %(<vehicle year="1959"/>)
+        end
+        
+      end
 
     end
 

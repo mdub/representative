@@ -1,5 +1,6 @@
 require "builder"
 require "active_support"
+require "representative/empty"
 
 module Representative
 
@@ -41,8 +42,10 @@ module Representative
     def element!(element_name, value, options, &block)
       text = content_generator = nil
       if block && value
-        content_generator = Proc.new do
-          block.call(Representative::Xml.new(@xml, value))
+        unless block == Representative::EMPTY
+          content_generator = Proc.new do
+            block.call(Representative::Xml.new(@xml, value))
+          end
         end
       else
         text = value
