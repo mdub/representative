@@ -21,7 +21,7 @@ describe Representative::Xml do
   describe "for some 'subject'" do
 
     before do
-      @subject = OpenStruct.new(:name => "Fred", :width => 200)
+      @subject = OpenStruct.new(:name => "Fred", :width => 200, :vehicle => OpenStruct.new(:year => "1959", :make => "Chevrolet"))
       @xml_representative = Representative::Xml.new(@xml, @subject)
     end
 
@@ -97,6 +97,17 @@ describe Representative::Xml do
 
       end
 
+      describe "with argument :self" do
+
+        it "doesn't alter the subject" do
+          represent.info(:self) do |info|
+            info.name
+          end
+          resulting_xml.should == %(<info><name>Fred</name></info>)
+        end
+        
+      end
+
       describe "with a nil argument" do
 
         it "builds an empty element" do
@@ -129,7 +140,6 @@ describe Representative::Xml do
       describe "with a block" do
 
         it "generates nested elements" do
-          @subject.vehicle = OpenStruct.new(:year => "1959", :make => "Chevrolet")
           represent.vehicle do |vehicle|
             vehicle.year
             vehicle.make
@@ -139,10 +149,9 @@ describe Representative::Xml do
 
       end
       
-      describe "with Representative::Empty" do
+      describe "with Representative::Empty block" do
 
         it "generates an empty element" do
-          @subject.vehicle = OpenStruct.new(:year => "1959", :make => "Chevrolet")
           represent.vehicle(:year => :year, &Representative::EMPTY)
           resulting_xml.should == %(<vehicle year="1959"/>)
         end

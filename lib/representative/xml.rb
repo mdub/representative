@@ -85,7 +85,9 @@ module Representative
     private 
 
     def resolve(value_generator, subject = subject!)
-      if value_generator.respond_to?(:to_proc)
+      if value_generator == :self
+        subject
+      elsif value_generator.respond_to?(:to_proc)
         value_generator.to_proc.call(subject) if subject
       else
         value_generator
