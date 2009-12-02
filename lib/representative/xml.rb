@@ -8,7 +8,7 @@ module Representative
 
     def initialize(xml_builder, subject = nil)
       @xml = xml_builder
-      @subject = subject
+      @subjects = [subject]
       yield self if block_given?
     end
 
@@ -21,7 +21,7 @@ module Representative
     end
 
     def subject!
-      @subject
+      @subjects.last
     end
     
     def property!(property_name, *args, &block)
@@ -44,7 +44,12 @@ module Representative
       if block && value
         unless block == Representative::EMPTY
           content_generator = Proc.new do
-            block.call(Representative::Xml.new(@xml, value))
+            @subjects.push(value)
+            begin
+              block.call(self)
+            ensure
+              @subjects.pop
+            end
           end
         end
       else
@@ -79,7 +84,7 @@ module Representative
 
     private 
 
-    def resolve(value_generator, subject = @subject)
+    def resolve(value_generator, subject = subject!)
       if value_generator.respond_to?(:to_proc)
         value_generator.to_proc.call(subject) if subject
       else
