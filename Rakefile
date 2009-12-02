@@ -2,6 +2,8 @@ require "rubygems"
 require "rake"
 require "rake/clean"
 
+require File.dirname(__FILE__) + "/lib/representative/version.rb"
+
 task :default => :spec
 
 def with_gem(gem_name, lib = gem_name)
@@ -18,6 +20,7 @@ with_gem "jeweler" do
   
   Jeweler::Tasks.new do |gem|
     gem.name = "representative"
+    gem.version = Representative::VERSION
     gem.summary = "Builds XML representations of your Ruby objects"
     gem.email = "mdub@dogbiscuit.org"
     gem.homepage = "http://github.com/mdub/representative"
