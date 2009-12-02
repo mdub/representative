@@ -39,12 +39,12 @@ module Representative
 
     end
 
-    def element!(element_name, value, options, &block)
-      text = content_generator = nil
-      if block && value
+    def element!(element_name, subject, options, &block)
+      content = content_generator = nil
+      if block && subject
         unless block == Representative::EMPTY
           content_generator = Proc.new do
-            @subjects.push(value)
+            @subjects.push(subject)
             begin
               block.call(self)
             ensure
@@ -53,9 +53,9 @@ module Representative
           end
         end
       else
-        text = value
+        content = subject
       end
-      tag_args = [text, options].compact
+      tag_args = [content, options].compact
       @xml.tag!(element_name, *tag_args, &content_generator)
     end
 
