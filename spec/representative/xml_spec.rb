@@ -149,17 +149,17 @@ describe Representative::Xml do
 
       end
       
-      describe "with Representative::Empty block" do
+    end
 
-        it "generates an empty element" do
-          represent.vehicle(:year => :year, &Representative::EMPTY)
-          resulting_xml.should == %(<vehicle year="1959"/>)
-        end
-        
+    describe "#empty!" do
+      
+      it "generates an empty element" do
+        represent.empty!(:vehicle, :year => :year)
+        resulting_xml.should == %(<vehicle year="1959"/>)
       end
 
     end
-
+    
     describe "#list_of!" do
 
       before do

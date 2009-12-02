@@ -82,6 +82,10 @@ module Representative
 
     end
 
+    def empty!(property_name, *args)
+      property!(property_name, *args, &Representative::EMPTY)
+    end
+      
     private 
 
     def resolve(value_generator, subject = subject!)
