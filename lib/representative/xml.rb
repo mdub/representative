@@ -26,16 +26,16 @@ module Representative
     
     def property!(property_name, *args, &block)
 
-      attributes = args.extract_options!
+      element_attributes = args.extract_options!
       value_generator = args.empty? ? property_name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
 
       element_name = property_name.to_s.dasherize
 
       value = resolve(value_generator)
-      resolved_attributes = resolve_attributes(attributes, value)
+      resolved_element_attributes = resolve_attributes(element_attributes, value)
 
-      element!(element_name, value, resolved_attributes, &block)
+      element!(element_name, value, resolved_element_attributes, &block)
 
     end
 
@@ -66,17 +66,17 @@ module Representative
       raise ArgumentError, "too many arguments" unless args.empty?
 
       list_name = property_name.to_s.dasherize
-      list_attributes = options[:list_attributes] || {}
+      list_element_attributes = options[:list_attributes] || {}
       item_name = options[:item_name] || list_name.singularize
-      item_attributes = options[:item_attributes] || {}
+      item_element_attributes = options[:item_attributes] || {}
 
       items = resolve(value_generator)
-      resolved_list_attributes = resolve_attributes(list_attributes, items)
+      resolved_list_element_attributes = resolve_attributes(list_element_attributes, items)
 
-      @xml.tag!(list_name, resolved_list_attributes.merge(:type => "array")) do
+      @xml.tag!(list_name, resolved_list_element_attributes.merge(:type => "array")) do
         items.each do |item|
-          resolved_item_attributes = resolve_attributes(item_attributes, item)
-          element!(item_name, item, resolved_item_attributes, &block)
+          resolved_item_element_attributes = resolve_attributes(item_element_attributes, item)
+          element!(item_name, item, resolved_item_element_attributes, &block)
         end
       end
 
@@ -98,9 +98,9 @@ module Representative
       end
     end
 
-    def resolve_attributes(attributes, subject)
-      if attributes
-        attributes.inject({}) do |resolved, (k,v)|
+    def resolve_attributes(element_attributes, subject)
+      if element_attributes
+        element_attributes.inject({}) do |resolved, (k,v)|
           resolved_value = resolve(v, subject)
           resolved[k.to_s.dasherize] = resolved_value unless resolved_value.nil?
           resolved
