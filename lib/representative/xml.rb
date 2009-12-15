@@ -16,7 +16,7 @@ module Representative
       if name.to_s =~ /!$/
         super
       else
-        property!(name, *args, &block)
+        attribute!(name, *args, &block)
       end
     end
 
@@ -24,13 +24,13 @@ module Representative
       @subjects.last
     end
     
-    def property!(property_name, *args, &block)
+    def attribute!(subject_attribute_name, *args, &block)
 
       element_attributes = args.extract_options!
-      value_generator = args.empty? ? property_name : args.shift
+      value_generator = args.empty? ? subject_attribute_name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      element_name = property_name.to_s.dasherize
+      element_name = subject_attribute_name.to_s.dasherize
 
       value = resolve(value_generator)
       resolved_element_attributes = resolve_attributes(element_attributes, value)
@@ -59,13 +59,13 @@ module Representative
       @xml.tag!(element_name, *tag_args, &content_generator)
     end
 
-    def list_of!(property_name, *args, &block)
+    def list_of!(attribute_name, *args, &block)
 
       options = args.extract_options!
-      value_generator = args.empty? ? property_name : args.shift
+      value_generator = args.empty? ? attribute_name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      list_name = property_name.to_s.dasherize
+      list_name = attribute_name.to_s.dasherize
       list_element_attributes = options[:list_attributes] || {}
       item_name = options[:item_name] || list_name.singularize
       item_element_attributes = options[:item_attributes] || {}
@@ -82,8 +82,8 @@ module Representative
 
     end
 
-    def empty!(property_name, *args)
-      property!(property_name, *args, &Representative::EMPTY)
+    def empty!(attribute_name, *args)
+      attribute!(attribute_name, *args, &Representative::EMPTY)
     end
       
     private 
