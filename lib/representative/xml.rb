@@ -1,14 +1,16 @@
 require "builder"
 require "active_support"
 require "representative/empty"
+require "representative/object_inspector"
 
 module Representative
 
   class Xml < BlankSlate
 
-    def initialize(xml_builder, subject = nil)
+    def initialize(xml_builder, subject = nil, options = {})
       @xml = xml_builder
       @subjects = [subject]
+      @inspector = options[:inspector] || ObjectInspector.new
       yield self if block_given?
     end
 
@@ -29,7 +31,7 @@ module Representative
       element_attributes = args.extract_options!
       value_generator = if args.empty? 
         lambda do |subject|
-          subject.send(subject_attribute_name)
+          @inspector.get_value(subject, subject_attribute_name)
         end
       else 
         args.shift
@@ -40,6 +42,7 @@ module Representative
 
       value = resolve_value(value_generator)
       resolved_element_attributes = resolve_element_attributes(element_attributes, value)
+      resolved_element_attributes.merge!(@inspector.get_metadata(subject!, subject_attribute_name))
 
       element!(element_name, value, resolved_element_attributes, &block)
 
