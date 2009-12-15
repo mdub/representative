@@ -27,13 +27,19 @@ module Representative
     def attribute!(subject_attribute_name, *args, &block)
 
       element_attributes = args.extract_options!
-      value_generator = args.empty? ? subject_attribute_name : args.shift
+      value_generator = if args.empty? 
+        lambda do |subject|
+          subject.send(subject_attribute_name)
+        end
+      else 
+        args.shift
+      end
       raise ArgumentError, "too many arguments" unless args.empty?
 
       element_name = subject_attribute_name.to_s.dasherize
 
-      value = resolve(value_generator)
-      resolved_element_attributes = resolve_attributes(element_attributes, value)
+      value = resolve_value(value_generator)
+      resolved_element_attributes = resolve_element_attributes(element_attributes, value)
 
       element!(element_name, value, resolved_element_attributes, &block)
 
@@ -70,12 +76,12 @@ module Representative
       item_name = options[:item_name] || list_name.singularize
       item_element_attributes = options[:item_attributes] || {}
 
-      items = resolve(value_generator)
-      resolved_list_element_attributes = resolve_attributes(list_element_attributes, items)
+      items = resolve_value(value_generator)
+      resolved_list_element_attributes = resolve_element_attributes(list_element_attributes, items)
 
       @xml.tag!(list_name, resolved_list_element_attributes.merge(:type => "array")) do
         items.each do |item|
-          resolved_item_element_attributes = resolve_attributes(item_element_attributes, item)
+          resolved_item_element_attributes = resolve_element_attributes(item_element_attributes, item)
           element!(item_name, item, resolved_item_element_attributes, &block)
         end
       end
@@ -88,7 +94,7 @@ module Representative
       
     private 
 
-    def resolve(value_generator, subject = subject!)
+    def resolve_value(value_generator, subject = subject!)
       if value_generator == :self
         subject
       elsif value_generator.respond_to?(:to_proc)
@@ -98,16 +104,16 @@ module Representative
       end
     end
 
-    def resolve_attributes(element_attributes, subject)
+    def resolve_element_attributes(element_attributes, subject)
       if element_attributes
-        element_attributes.inject({}) do |resolved, (k,v)|
-          resolved_value = resolve(v, subject)
-          resolved[k.to_s.dasherize] = resolved_value unless resolved_value.nil?
+        element_attributes.inject({}) do |resolved, (name, value_generator)|
+          resolved_value = resolve_value(value_generator, subject)
+          resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
           resolved
         end
       end
     end
-
+    
   end
 
 end
