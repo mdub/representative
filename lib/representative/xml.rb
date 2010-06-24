@@ -18,11 +18,7 @@ module Representative
     def represent(subject, &block)
       @subjects.push(subject)
       begin
-        if block.arity < 1
-          instance_eval(&block)
-        else
-          block.call(self)
-        end
+        block.call(self)
       ensure
         @subjects.pop
       end
