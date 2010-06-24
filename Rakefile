@@ -2,10 +2,6 @@ require "rubygems"
 require "rake"
 require "rake/clean"
 
-require File.dirname(__FILE__) + "/lib/representative/version.rb"
-
-task :default => :spec
-
 def with_gem(gem_name, lib = gem_name)
   begin
     require(lib)
@@ -16,28 +12,14 @@ def with_gem(gem_name, lib = gem_name)
   yield
 end
 
-with_gem "jeweler" do
-  
-  Jeweler::Tasks.new do |gem|
-    gem.name = "representative"
-    gem.version = Representative::VERSION
-    gem.summary = "Builds XML representations of your Ruby objects"
-    gem.email = "mdub@dogbiscuit.org"
-    gem.homepage = "http://github.com/mdub/representative"
-    gem.authors = ["Mike Williams"]
-    gem.add_dependency("activesupport", ">= 2.2.2")
-  end
-  
-  Jeweler::GemcutterTasks.new
-
-end
-
 require "spec/rake/spectask"
 
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
 end
+
+task :default => :spec
 
 Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.libs << 'lib' << 'spec'
