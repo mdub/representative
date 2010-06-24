@@ -59,12 +59,7 @@ module Representative
       if block && subject
         unless block == Representative::EMPTY
           content_generator = Proc.new do
-            @subjects.push(subject)
-            begin
-              block.call(self)
-            ensure
-              @subjects.pop
-            end
+            represent(subject, &block)
           end
         end
       else
