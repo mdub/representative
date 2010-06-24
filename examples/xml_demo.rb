@@ -29,14 +29,14 @@ books = [
 ]
 
 xml = Builder::XmlMarkup.new(:indent => 2)
-representative = Representative::Xml.new(xml)
-
-representative.list_of!(:books, books) do |_book|
-  _book.title
-  _book.list_of!(:authors)
-  _book.published do |_published|
-    _published.by
-    _published.year
+Representative::Xml.new(xml) do |r|
+  r.list_of :books, books do
+    r.element :title
+    r.list_of :authors
+    r.element :published do
+      r.element :by
+      r.element :year
+    end
   end
 end
 

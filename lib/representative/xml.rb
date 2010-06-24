@@ -15,19 +15,24 @@ module Representative
       yield self if block_given?
     end
 
-    def method_missing(name, *args, &block)
-      if name.to_s =~ /!$/
-        super
-      else
-        attribute!(name, *args, &block)
+    def represent(subject, &block)
+      @subjects.push(subject)
+      begin
+        if block.arity < 1
+          instance_eval(&block)
+        else
+          block.call(self)
+        end
+      ensure
+        @subjects.pop
       end
     end
-
-    def subject!
+    
+    def subject
       @subjects.last
     end
     
-    def attribute!(subject_attribute_name, *args, &block)
+    def element(subject_attribute_name, *args, &block)
 
       element_attributes = args.extract_options!
       value_generator = if args.empty? 
@@ -43,7 +48,7 @@ module Representative
 
       value = resolve_value(value_generator)
       resolved_element_attributes = resolve_element_attributes(element_attributes, value)
-      resolved_element_attributes.merge!(@inspector.get_metadata(subject!, subject_attribute_name))
+      resolved_element_attributes.merge!(@inspector.get_metadata(subject, subject_attribute_name))
 
       element!(element_name, value, resolved_element_attributes, &block)
 
@@ -69,7 +74,7 @@ module Representative
       @xml.tag!(element_name, *tag_args, &content_generator)
     end
 
-    def list_of!(attribute_name, *args, &block)
+    def list_of(attribute_name, *args, &block)
 
       options = args.extract_options!
       value_generator = args.empty? ? attribute_name : args.shift
@@ -96,13 +101,13 @@ module Representative
 
     end
 
-    def empty!(attribute_name, *args)
-      attribute!(attribute_name, *args, &Representative::EMPTY)
+    def empty_element(attribute_name, *args)
+      element(attribute_name, *args, &Representative::EMPTY)
     end
       
     private 
 
-    def resolve_value(value_generator, subject = subject!)
+    def resolve_value(value_generator, subject = subject)
       if value_generator == :self
         subject
       elsif value_generator.respond_to?(:to_proc)
