@@ -28,29 +28,27 @@ module Representative
       @subjects.last
     end
     
-    def element(subject_attribute_name, *args, &block)
+    def element(name, *args, &block)
 
       element_attributes = args.extract_options!
       value_generator = if args.empty? 
         lambda do |subject|
-          @inspector.get_value(subject, subject_attribute_name)
+          @inspector.get_value(subject, name)
         end
       else 
         args.shift
       end
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      element_name = subject_attribute_name.to_s.dasherize
-
       value = resolve_value(value_generator)
       resolved_element_attributes = resolve_element_attributes(element_attributes, value)
-      resolved_element_attributes.merge!(@inspector.get_metadata(subject, subject_attribute_name))
+      resolved_element_attributes.merge!(@inspector.get_metadata(subject, name))
 
-      element!(element_name, value, resolved_element_attributes, &block)
+      element!(name, value, resolved_element_attributes, &block)
 
     end
 
-    def element!(element_name, subject, options, &block)
+    def element!(name, subject, options, &block)
       content = content_generator = nil
       if block && subject
         unless block == Representative::EMPTY
@@ -62,7 +60,7 @@ module Representative
         content = subject
       end
       tag_args = [content, options].compact
-      @xml.tag!(element_name, *tag_args, &content_generator)
+      @xml.tag!(name.to_s.dasherize, *tag_args, &content_generator)
     end
 
     def list_of(attribute_name, *args, &block)
