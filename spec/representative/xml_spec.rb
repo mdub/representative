@@ -200,6 +200,15 @@ describe Representative::Xml do
         end
       end
 
+      describe "with an argument that resolves to nil" do
+
+        it "omits the attribute" do
+          represent.list_of!(:flags)
+          resulting_xml.should == %(<flags/>)
+        end
+
+      end
+
       describe "with a block" do
 
         it "generates a nested element for each list element" do

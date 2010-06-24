@@ -1,5 +1,6 @@
+require "active_support/core_ext/array"
+require "active_support/core_ext/string"
 require "builder"
-require "active_support"
 require "representative/empty"
 require "representative/object_inspector"
 
@@ -80,6 +81,10 @@ module Representative
       item_element_attributes = options[:item_attributes] || {}
 
       items = resolve_value(value_generator)
+      if items.nil?
+        return @xml.tag!(list_name)
+      end
+
       resolved_list_element_attributes = resolve_element_attributes(list_element_attributes, items)
 
       @xml.tag!(list_name, resolved_list_element_attributes.merge(:type => "array")) do
