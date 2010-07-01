@@ -37,15 +37,18 @@ Given a Ruby data-structure:
 Representative::Xml can be used to generate XML, in a declarative style:
 
     xml = Builder::XmlMarkup.new(:indent => 2)
-    representative = Representative::Xml.new(xml)
 
-    representative.list_of!(:books, books) do |_book|
-      _book.title
-      _book.list_of!(:authors)
-      _book.published do |_published|
-        _published.by
-        _published.year
+    Representative::Xml.new(xml) do |r|
+    
+      r.list_of :books, books do
+        r.element :title
+        r.list_of :authors
+        r.element :published do
+          r.element :by
+          r.element :year
+        end
       end
+      
     end
 
     puts xml.target!
@@ -85,18 +88,18 @@ The resulting XML looks like this:
 
 Notice that:
 
-- Representative generates elements for each object-attribute you name (and not the ones you don't).
 - The structure of the XML mirrors the structure described by the nested Ruby blocks.
-- Using `list_of!` for a collection attribute generates an "array" element, which plays nicely
+- Representative walks the object-graph for you.
+- Using `list_of` for a collection attribute generates an "array" element, which plays nicely
   with most Ruby XML-to-hash converters.
 - Where a named object-attribute is nil, you get an empty element.
 
 Installation
 ------------
 
-Representative is packaged as a Gem, hosted on [gemcutter](http://gemcutter.org/gems/representative).  Install with:
+Representative is packaged as a Gem.  Install with:
 
-    sudo gem install representative
+    gem install representative
 
 Copyright
 ---------
