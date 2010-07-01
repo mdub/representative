@@ -153,14 +153,14 @@ describe Representative::Xml do
         end
 
       end
-      
-    end
 
-    describe "#empty_element" do
+      describe "with an EMPTY block" do
 
-      it "generates an empty element" do
-        r.empty_element :vehicle, :year => :year
-        resulting_xml.should == %(<vehicle year="1959"/>)
+        it "generates an empty element" do
+          r.element :vehicle, :year => :year, &r.empty
+          resulting_xml.should == %(<vehicle year="1959"/>)
+        end
+
       end
 
     end
@@ -225,6 +225,15 @@ describe Representative::Xml do
 
       end
 
+      describe "with an EMPTY block" do
+
+        it "generates empty elements for each list element" do
+          r.list_of(:nick_names, :item_attributes => {:value => :to_s}, &r.empty)
+          resulting_xml.should == %(<nick-names type="array"><nick-name value="Freddie"/><nick-name value="Knucklenose"/></nick-names>)
+        end
+        
+      end
+      
       describe "with :item_attributes AND block" do
         
         it "generates attributes and nested elements" do

@@ -75,10 +75,10 @@ module Representative
 
     end
 
-    def empty_element(attribute_name, *args)
-      element(attribute_name, *args, &Representative::EMPTY)
+    def empty
+      Representative::EMPTY
     end
-      
+    
     private 
 
     def element!(name, subject, options, &block)
