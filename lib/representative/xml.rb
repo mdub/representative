@@ -44,7 +44,7 @@ module Representative
       resolved_element_attributes = resolve_element_attributes(element_attributes, value)
       resolved_element_attributes.merge!(@inspector.get_metadata(subject, name))
 
-      element!(name, value, resolved_element_attributes, &block)
+      emit_element(name, value, resolved_element_attributes, &block)
 
     end
 
@@ -69,7 +69,7 @@ module Representative
       @xml.tag!(list_name, resolved_list_element_attributes.merge(:type => "array")) do
         items.each do |item|
           resolved_item_element_attributes = resolve_element_attributes(item_element_attributes, item)
-          element!(item_name, item, resolved_item_element_attributes, &block)
+          emit_element(item_name, item, resolved_item_element_attributes, &block)
         end
       end
 
@@ -81,12 +81,12 @@ module Representative
     
     private 
 
-    def element!(name, subject, options, &block)
+    def emit_element(name, subject, options, &content_block)
       content = content_generator = nil
-      if block && subject
-        unless block == Representative::EMPTY
+      if subject && content_block
+        unless content_block == Representative::EMPTY
           content_generator = Proc.new do
-            represent(subject, &block)
+            represent(subject, &content_block)
           end
         end
       else
