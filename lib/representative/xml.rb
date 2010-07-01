@@ -15,10 +15,10 @@ module Representative
       yield self if block_given?
     end
 
-    def represent(subject, &block)
+    def represent(subject)
       @subjects.push(subject)
       begin
-        block.call(self)
+        yield subject
       ensure
         @subjects.pop
       end
@@ -46,21 +46,6 @@ module Representative
 
       element!(name, value, resolved_element_attributes, &block)
 
-    end
-
-    def element!(name, subject, options, &block)
-      content = content_generator = nil
-      if block && subject
-        unless block == Representative::EMPTY
-          content_generator = Proc.new do
-            represent(subject, &block)
-          end
-        end
-      else
-        content = subject
-      end
-      tag_args = [content, options].compact
-      @xml.tag!(name.to_s.dasherize, *tag_args, &content_generator)
     end
 
     def list_of(attribute_name, *args, &block)
@@ -95,6 +80,21 @@ module Representative
     end
       
     private 
+
+    def element!(name, subject, options, &block)
+      content = content_generator = nil
+      if block && subject
+        unless block == Representative::EMPTY
+          content_generator = Proc.new do
+            represent(subject, &block)
+          end
+        end
+      else
+        content = subject
+      end
+      tag_args = [content, options].compact
+      @xml.tag!(name.to_s.dasherize, *tag_args, &content_generator)
+    end
 
     def resolve_value(value_generator, subject = subject)
       if value_generator == :self
