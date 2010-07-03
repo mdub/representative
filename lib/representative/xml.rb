@@ -6,7 +6,7 @@ require "representative/object_inspector"
 
 module Representative
 
-  class Xml < BlankSlate
+  class Xml
 
     def initialize(xml_builder, subject = nil, options = {})
       @xml = xml_builder
