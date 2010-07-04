@@ -15,7 +15,7 @@ module Representative
       yield self if block_given?
     end
 
-    def represent(subject)
+    def representing(subject)
       @subjects.push(subject)
       begin
         yield subject
@@ -30,7 +30,9 @@ module Representative
     
     def element(name, *args, &block)
 
-      element_attributes = args.extract_options!
+      attributes = args.extract_options!
+      attributes = attributes.merge(@inspector.get_metadata(subject, name))
+
       value_generator = if args.empty? 
         lambda do |subject|
           @inspector.get_value(subject, name)
@@ -38,38 +40,44 @@ module Representative
       else 
         args.shift
       end
+
       raise ArgumentError, "too many arguments" unless args.empty?
 
       value = resolve_value(value_generator)
-      resolved_element_attributes = resolve_element_attributes(element_attributes, value)
-      resolved_element_attributes.merge!(@inspector.get_metadata(subject, name))
+      return @xml.tag!(name) if value.nil?
+      
+      representing(value) do
+        
+        content_string = subject.to_s unless block
+        content_block = unless block.nil? || block == Representative::EMPTY
+          Proc.new do
+            block.call(subject)
+          end
+        end
 
-      emit_element(name, value, resolved_element_attributes, &block)
+        resolved_attributes = resolve_attributes(attributes)
+        tag_args = [content_string, resolved_attributes].compact
+
+        @xml.tag!(name.to_s.dasherize, *tag_args, &content_block)
+
+      end
 
     end
 
-    def list_of(attribute_name, *args, &block)
+    def list_of(name, *args, &block)
 
       options = args.extract_options!
-      value_generator = args.empty? ? attribute_name : args.shift
+      value_generator = args.empty? ? name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      list_name = attribute_name.to_s.dasherize
-      list_element_attributes = options[:list_attributes] || {}
-      item_name = options[:item_name] || list_name.singularize
-      item_element_attributes = options[:item_attributes] || {}
+      list_attributes = options[:list_attributes] || {}
+      item_name = options[:item_name] || name.to_s.singularize
+      item_attributes = options[:item_attributes] || {}
 
       items = resolve_value(value_generator)
-      if items.nil?
-        return @xml.tag!(list_name)
-      end
-
-      resolved_list_element_attributes = resolve_element_attributes(list_element_attributes, items)
-
-      @xml.tag!(list_name, resolved_list_element_attributes.merge(:type => "array")) do
+      element(name, items, list_attributes.merge(:type => "array")) do
         items.each do |item|
-          resolved_item_element_attributes = resolve_element_attributes(item_element_attributes, item)
-          emit_element(item_name, item, resolved_item_element_attributes, &block)
+          element(item_name, item, item_attributes, &block)
         end
       end
 
@@ -81,21 +89,6 @@ module Representative
     
     private 
 
-    def emit_element(name, subject, options, &content_block)
-      content = content_generator = nil
-      if subject && content_block
-        unless content_block == Representative::EMPTY
-          content_generator = Proc.new do
-            represent(subject, &content_block)
-          end
-        end
-      else
-        content = subject
-      end
-      tag_args = [content, options].compact
-      @xml.tag!(name.to_s.dasherize, *tag_args, &content_generator)
-    end
-
     def resolve_value(value_generator, subject = subject)
       if value_generator == :self
         subject
@@ -106,9 +99,9 @@ module Representative
       end
     end
 
-    def resolve_element_attributes(element_attributes, subject)
-      if element_attributes
-        element_attributes.inject({}) do |resolved, (name, value_generator)|
+    def resolve_attributes(attributes)
+      if attributes
+        attributes.inject({}) do |resolved, (name, value_generator)|
           resolved_value = resolve_value(value_generator, subject)
           resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
           resolved

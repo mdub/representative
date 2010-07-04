@@ -148,8 +148,9 @@ describe Representative::Xml do
 
         it "yields each new subject" do
           r.element :vehicle do |vehicle|
-            vehicle.should == @subject.vehicle
+            r.element :year, vehicle.year
           end
+          resulting_xml.should == %(<vehicle><year>1959</year></vehicle>)
         end
 
       end
