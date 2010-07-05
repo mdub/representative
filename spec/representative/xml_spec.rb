@@ -116,9 +116,14 @@ describe Representative::Xml do
 
         describe "and attributes" do
 
-          it "omits the attributes" do
+          it "omits attributes derived from the subject" do
             r.element :name, nil, :size => :size
             resulting_xml.should == %(<name/>)
+          end
+
+          it "retains attributes with explicit values" do
+            r.element :name, nil, :lang => "en"
+            resulting_xml.should == %(<name lang="en"/>)
           end
 
         end

@@ -87,17 +87,22 @@ module Representative
       raise ArgumentError, "too many arguments" unless args.empty?
 
       value = resolve_value(value_generator)
-      return @xml.tag!(name) if value.nil?
       
       representing(value) do
-        
-        content_string = subject.to_s unless block
-        content_block = unless block.nil? || block == Representative::EMPTY
-          Proc.new do
-            block.call(subject)
+        content_string = content_block = nil
+
+        if subject
+          if block
+            unless block == Representative::EMPTY
+              content_block = Proc.new do
+                block.call(subject) 
+              end
+            end
+          else
+            content_string = subject.to_s
           end
         end
-
+      
         resolved_attributes = resolve_attributes(attributes)
         tag_args = [content_string, resolved_attributes].compact
 
@@ -132,7 +137,7 @@ module Representative
       item_attributes = options[:item_attributes] || {}
 
       items = resolve_value(value_generator)
-      element(name, items, list_attributes.merge(:type => "array")) do
+      element(name, items, list_attributes.merge(:type => lambda{"array"})) do
         items.each do |item|
           element(item_name, item, item_attributes, &block)
         end
