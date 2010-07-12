@@ -214,8 +214,10 @@ describe Representative::Xml do
       describe "with an argument that resolves to nil" do
 
         it "omits the attribute" do
-          r.list_of(:flags)
-          resulting_xml.should == %(<flags/>)
+          r.list_of(:services) do
+            r.date
+          end
+          resulting_xml.should == %(<services/>)
         end
 
       end
@@ -253,6 +255,17 @@ describe Representative::Xml do
 
     end
 
+    describe "#representing" do
+    
+      it "selects a new subject without generating an element" do
+        r.representing :vehicle do
+          r.element :make
+        end
+        resulting_xml.should == %(<make>Chevrolet</make>)
+      end
+      
+    end
+    
   end
 
 end

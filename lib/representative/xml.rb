@@ -26,19 +26,16 @@ module Representative
     # This object will provide element values where they haven't been 
     # explicitly provided.
     #
-    def subject
+    def current_subject
       @subjects.last
     end
 
+    alias :subject :current_subject
+    
     # Evaluate a block with a specified object as #subject.
     #
-    def representing(subject)
-      @subjects.push(subject)
-      begin
-        yield subject
-      ensure
-        @subjects.pop
-      end
+    def representing(new_subject, &block)
+      with_subject(resolve_value(new_subject), &block)
     end
 
     # Generate an element.
@@ -73,12 +70,12 @@ module Representative
     #
     def element(name, *args, &block)
 
-      attributes = args.extract_options!
-      attributes = attributes.merge(@inspector.get_metadata(subject, name))
+      metadata = @inspector.get_metadata(current_subject, name)
+      attributes = args.extract_options!.merge(metadata)
 
-      value_generator = if args.empty? 
+      subject_of_element = if args.empty? 
         lambda do |subject|
-          @inspector.get_value(subject, name)
+          @inspector.get_value(current_subject, name)
         end
       else 
         args.shift
@@ -86,20 +83,19 @@ module Representative
 
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      value = resolve_value(value_generator)
-      
-      representing(value) do
+      representing(subject_of_element) do
+
         content_string = content_block = nil
 
-        if subject
+        unless current_subject.nil?
           if block
             unless block == Representative::EMPTY
               content_block = Proc.new do
-                block.call(subject) 
+                block.call(current_subject) 
               end
             end
           else
-            content_string = subject.to_s
+            content_string = current_subject.to_s
           end
         end
       
@@ -129,14 +125,14 @@ module Representative
     def list_of(name, *args, &block)
 
       options = args.extract_options!
-      value_generator = args.empty? ? name : args.shift
+      list_subject = args.empty? ? name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
 
       list_attributes = options[:list_attributes] || {}
       item_name = options[:item_name] || name.to_s.singularize
       item_attributes = options[:item_attributes] || {}
 
-      items = resolve_value(value_generator)
+      items = resolve_value(list_subject)
       element(name, items, list_attributes.merge(:type => lambda{"array"})) do
         items.each do |item|
           element(item_name, item, item_attributes, &block)
@@ -157,11 +153,20 @@ module Representative
     
     private 
 
-    def resolve_value(value_generator, subject = subject)
+    def with_subject(subject)
+      @subjects.push(subject)
+      begin
+        yield subject
+      ensure
+        @subjects.pop
+      end
+    end
+
+    def resolve_value(value_generator)
       if value_generator == :self
-        subject
+        current_subject
       elsif value_generator.respond_to?(:to_proc)
-        value_generator.to_proc.call(subject) if subject
+        value_generator.to_proc.call(current_subject) unless current_subject.nil?
       else
         value_generator
       end
@@ -170,7 +175,7 @@ module Representative
     def resolve_attributes(attributes)
       if attributes
         attributes.inject({}) do |resolved, (name, value_generator)|
-          resolved_value = resolve_value(value_generator, subject)
+          resolved_value = resolve_value(value_generator)
           resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
           resolved
         end
