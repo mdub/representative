@@ -151,6 +151,11 @@ module Representative
       Representative::EMPTY
     end
     
+    # Generate a comment
+    def comment(text)
+      @xml.comment!(text)
+    end
+    
     private 
 
     def with_subject(subject)

@@ -265,6 +265,19 @@ describe Representative::Xml do
       end
       
     end
+
+    describe "#comment" do
+      
+      it "inserts a comment" do
+        r.element :vehicle do
+          r.comment "Year of manufacture"
+          r.element :year
+        end
+        resulting_xml.should == 
+        %(<vehicle><!-- Year of manufacture --><year>1959</year></vehicle>)
+      end
+      
+    end
     
   end
 
