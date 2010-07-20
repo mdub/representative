@@ -1,14 +1,14 @@
 require "active_support/core_ext/array"
 require "active_support/core_ext/string"
 require "builder"
+require "representative/base"
 require "representative/empty"
-require "representative/object_inspector"
 
 module Representative
 
   # Easily generate XML while traversing an object-graph.
   #
-  class Xml
+  class Xml < Base
 
     # Create an XML-generating Representative.  The first argument should be an instance of
     # Builder::XmlMarkup (or something that implements it's interface).  The second argument
@@ -16,26 +16,8 @@ module Representative
     #
     def initialize(xml_builder, subject = nil, options = {})
       @xml = xml_builder
-      @subjects = [subject]
-      @inspector = options[:inspector] || ObjectInspector.new
+      super(subject, options)
       yield self if block_given?
-    end
-
-    # Return the current "subject" of representation.  
-    #
-    # This object will provide element values where they haven't been 
-    # explicitly provided.
-    #
-    def current_subject
-      @subjects.last
-    end
-
-    alias :subject :current_subject
-    
-    # Evaluate a block with a specified object as #subject.
-    #
-    def representing(new_subject, &block)
-      with_subject(resolve_value(new_subject), &block)
     end
 
     # Generate an element.
@@ -154,37 +136,6 @@ module Representative
     # Generate a comment
     def comment(text)
       @xml.comment!(text)
-    end
-    
-    private 
-
-    def with_subject(subject)
-      @subjects.push(subject)
-      begin
-        yield subject
-      ensure
-        @subjects.pop
-      end
-    end
-
-    def resolve_value(value_generator)
-      if value_generator == :self
-        current_subject
-      elsif value_generator.respond_to?(:to_proc)
-        value_generator.to_proc.call(current_subject) unless current_subject.nil?
-      else
-        value_generator
-      end
-    end
-
-    def resolve_attributes(attributes)
-      if attributes
-        attributes.inject({}) do |resolved, (name, value_generator)|
-          resolved_value = resolve_value(value_generator)
-          resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
-          resolved
-        end
-      end
     end
     
   end
