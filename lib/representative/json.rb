@@ -9,7 +9,7 @@ module Representative
       super(subject, options)
       @buffer = ""
       @indent_level = 0
-      start_object
+      open "{"
       yield self if block_given?
     end
 
@@ -21,12 +21,12 @@ module Representative
 
     def list_of(name, values)
       emit_label(name)
-      start_array
+      open "["
       values.each do |value|
         newline_and_indent
         emit(value.to_json)
       end
-      end_array
+      close "]"
     end
     
     def to_json
@@ -61,26 +61,15 @@ module Representative
       @comma = ","
     end
     
-    def start_object
-      emit "{"
+    def open(opening_char)
+      emit opening_char
       increase_indent
       @comma = ""
     end
 
-    def end_object
+    def close(closing_char)
       decrease_indent
-      emit "\n#{indentation}}"
-    end
-
-    def start_array
-      emit "["
-      increase_indent
-      @comma = ""
-    end
-
-    def end_array
-      decrease_indent
-      emit "\n#{indentation}]"
+      emit "\n#{indentation}#{closing_char}"
     end
     
   end
