@@ -12,7 +12,7 @@ module Representative
       open "{"
       yield self if block_given?
     end
-
+    
     # def element(name, *args, &block)
     def element(name, value)
       emit_label(name)
@@ -23,6 +23,7 @@ module Representative
       emit_label(name)
       open "["
       values.each do |value|
+        optional_comma
         newline_and_indent
         emit(value.to_json)
       end
@@ -30,7 +31,15 @@ module Representative
     end
     
     def to_json
-      @buffer + "\n}\n"
+      original_buffer = @buffer
+      begin
+        @buffer = original_buffer.dup
+        close "}"
+        emit "\n"
+        @buffer
+      ensure
+        @buffer = original_buffer
+      end
     end
 
     private
@@ -52,24 +61,32 @@ module Representative
     end
 
     def emit_label(name)
+      optional_comma
       newline_and_indent
       emit("#{name.to_s.to_json}: ")
     end
 
+    def optional_comma
+      emit(",") unless @start_of_block
+      @start_of_block = false
+    end
+    
     def newline_and_indent
-      emit("#{@comma}\n#{indentation}")
-      @comma = ","
+      emit("\n#{indentation}")
     end
     
     def open(opening_char)
-      emit opening_char
+      emit(opening_char)
       increase_indent
-      @comma = ""
+      @start_of_block = true
     end
 
     def close(closing_char)
       decrease_indent
-      emit "\n#{indentation}#{closing_char}"
+      unless @start_of_block
+        newline_and_indent
+      end
+      emit(closing_char)
     end
     
   end

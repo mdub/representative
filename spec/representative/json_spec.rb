@@ -15,7 +15,7 @@ describe Representative::Json do
   describe "with nothing to represent" do
 
     it "emits an empty object" do
-      resulting_json.should == "{\n}\n"
+      resulting_json.should == "{}\n"
     end
 
   end
