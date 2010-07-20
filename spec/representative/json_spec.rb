@@ -24,7 +24,7 @@ describe Representative::Json do
 
     describe "with an explicit value" do
 
-      it "generates a key-value pair" do
+      it "generates a named-value" do
         r.element :name, "Fred"
         resulting_json.should == undent(<<-JSON)
         {
@@ -50,7 +50,7 @@ describe Representative::Json do
 
     describe "following another element" do
       
-      it "separates key-value pairs with commas" do
+      it "separates named-values with commas" do
         r.element :name, "Fred"
         r.element :age, 36
         resulting_json.should == undent(<<-JSON)
@@ -63,6 +63,27 @@ describe Representative::Json do
       
     end
     
+  end
+
+  describe "#list_of" do
+
+    describe "with an explicit value" do
+
+      it "generates a named array" do
+        r.list_of :names, %w(Hewey Dewey Louie)
+        resulting_json.should == undent(<<-JSON)
+        {
+          "names": [
+            "Hewey",
+            "Dewey",
+            "Louie"
+          ]
+        }
+        JSON
+      end
+
+    end
+
   end
 
 end

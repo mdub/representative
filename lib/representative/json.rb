@@ -15,13 +15,20 @@ module Representative
 
     # def element(name, *args, &block)
     def element(name, value)
-      emit(@comma)
-      emit "\n"
-      indent
-      emit %(#{name.to_s.to_json}: #{value.to_json})
-      @comma = ","
+      emit_label(name)
+      emit(value.to_json)
     end
 
+    def list_of(name, values)
+      emit_label(name)
+      start_array
+      values.each do |value|
+        newline_and_indent
+        emit(value.to_json)
+      end
+      end_array
+    end
+    
     def to_json
       @buffer + "\n}\n"
     end
@@ -32,8 +39,8 @@ module Representative
       @buffer << s
     end
 
-    def indent
-      emit ("  " * @indent_level)
+    def indentation
+      ("  " * @indent_level)
     end
 
     def increase_indent
@@ -44,6 +51,16 @@ module Representative
       @indent_level -= 1
     end
 
+    def emit_label(name)
+      newline_and_indent
+      emit("#{name.to_s.to_json}: ")
+    end
+
+    def newline_and_indent
+      emit("#{@comma}\n#{indentation}")
+      @comma = ","
+    end
+    
     def start_object
       emit "{"
       increase_indent
@@ -52,7 +69,18 @@ module Representative
 
     def end_object
       decrease_indent
-      emit "\n}\n"
+      emit "\n#{indentation}}"
+    end
+
+    def start_array
+      emit "["
+      increase_indent
+      @comma = ""
+    end
+
+    def end_array
+      decrease_indent
+      emit "\n#{indentation}]"
     end
     
   end
