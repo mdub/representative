@@ -16,7 +16,7 @@ module Representative
     # def element(name, *args, &block)
     def element(name, value)
       indent
-      emit %(#{name.to_s.to_json}: #{value.to_s.to_json}\n)
+      emit %(#{name.to_s.to_json}: #{value.to_json}\n)
     end
 
     def to_json
