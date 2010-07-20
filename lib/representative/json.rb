@@ -15,12 +15,15 @@ module Representative
 
     # def element(name, *args, &block)
     def element(name, value)
+      emit(@comma)
+      emit "\n"
       indent
-      emit %(#{name.to_s.to_json}: #{value.to_json}\n)
+      emit %(#{name.to_s.to_json}: #{value.to_json})
+      @comma = ","
     end
 
     def to_json
-      @buffer + "}\n"
+      @buffer + "\n}\n"
     end
 
     private
@@ -42,13 +45,14 @@ module Representative
     end
 
     def start_object
-      emit "{\n"
+      emit "{"
       increase_indent
+      @comma = ""
     end
 
     def end_object
       decrease_indent
-      emit "}\n"
+      emit "\n}\n"
     end
     
   end

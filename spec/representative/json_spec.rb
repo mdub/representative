@@ -48,6 +48,21 @@ describe Representative::Json do
 
     end
 
+    describe "following another element" do
+      
+      it "separates key-value pairs with commas" do
+        r.element :name, "Fred"
+        r.element :age, 36
+        resulting_json.should == undent(<<-JSON)
+        {
+          "name": "Fred",
+          "age": 36
+        }
+        JSON
+      end
+      
+    end
+    
   end
 
 end
