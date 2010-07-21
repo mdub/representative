@@ -62,6 +62,42 @@ describe Representative::Json do
       end
       
     end
+
+    describe "with a block" do
+      
+      it "generates a nested object" do
+        @author = OpenStruct.new(:name => "Fred", :age => 36)
+        r.element :author, "whatever" do
+          r.element :name, "Fred"
+        end
+        resulting_json.should == undent(<<-JSON)
+        { 
+          "author": {
+            "name": "Fred"
+          }
+        }
+        JSON
+      end
+      
+    end
+
+    describe "without an explicit value" do
+      
+      it "extracts the value from the current subject" do
+        @author = OpenStruct.new(:name => "Fred", :age => 36)
+        r.representing @author do
+          r.element :name
+          r.element :age
+        end
+        resulting_json.should == undent(<<-JSON)
+        { 
+          "name": "Fred",
+          "age": 36
+        }
+        JSON
+      end
+      
+    end
     
   end
 

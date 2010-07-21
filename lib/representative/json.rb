@@ -1,3 +1,4 @@
+require "active_support/core_ext/array"
 require "representative/base"
 require "json"
 
@@ -13,10 +14,34 @@ module Representative
       yield self if block_given?
     end
     
-    # def element(name, *args, &block)
-    def element(name, value)
-      emit_label(name)
-      emit(value.to_json)
+    def element(name, *args)
+
+      metadata = @inspector.get_metadata(current_subject, name)
+      attributes = args.extract_options!.merge(metadata)
+
+      subject_of_element = if args.empty? 
+        lambda do |subject|
+          @inspector.get_value(current_subject, name)
+        end
+      else 
+        args.shift
+      end
+
+      raise ArgumentError, "too many arguments" unless args.empty?
+
+      representing(subject_of_element) do
+
+        emit_label(name)
+        if block_given?
+          open "{"
+          yield current_subject
+          close "}"
+        else
+          emit(current_subject.to_json)
+        end
+
+      end
+      
     end
 
     def list_of(name, values)
