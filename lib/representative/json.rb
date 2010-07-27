@@ -28,23 +28,23 @@ module Representative
 
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      emit_label(name)
-      emit_value(subject_of_element, &block)
+      label(name)
+      value(subject_of_element, &block)
       
     end
 
-    def list_of(name, values, &block)
-      emit_label(name)
+    def list_of(name, elements, &block)
+      label(name)
       open "["
-      values.each do |value|
+      elements.each do |element|
         optional_comma
         newline_and_indent
-        emit_value(value, &block)
+        value(element, &block)
       end
       close "]"
     end
 
-    def emit_value(subject)
+    def value(subject)
       representing(subject) do
         if block_given?
           open "{"
@@ -78,7 +78,7 @@ module Representative
       @indent_level -= 1
     end
 
-    def emit_label(name)
+    def label(name)
       return false if @indent_level == 0
       optional_comma
       newline_and_indent
