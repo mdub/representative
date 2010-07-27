@@ -34,6 +34,18 @@ describe Representative::Json do
 
       end
 
+      describe "without an explicit value" do
+
+        it "extracts the value from the current subject" do
+          @author = OpenStruct.new(:name => "Fred", :age => 36)
+          r.representing(@author) do
+            r.element :name
+          end
+          resulting_json.should == %{"Fred"\n}
+        end
+
+      end
+
       describe "with a block" do
 
         it "outputs an object" do
@@ -64,14 +76,14 @@ describe Representative::Json do
       end
 
     end
-    
+
   end
 
   describe "within an element block" do
-    
+
     describe "#element" do
-      
-      it "generates a labelled values" do
+
+      it "generates labelled values" do
         r.element :author, Object.new do
           r.element :name, "Fred"
           r.element :age, 36
@@ -83,28 +95,27 @@ describe Representative::Json do
         }
         JSON
       end
-      
+
+      describe "without an explicit value" do
+
+        it "extracts the value from the current subject" do
+          @author = OpenStruct.new(:name => "Fred", :age => 36)
+          r.element :author, @author do
+            r.element :name
+            r.element :age
+          end
+          resulting_json.should == undent(<<-JSON)
+          { 
+            "name": "Fred",
+            "age": 36
+          }
+          JSON
+        end
+
+      end
+
     end
 
-    describe "without an explicit value" do
-      
-      it "extracts the value from the current subject" do
-        pending
-        @author = OpenStruct.new(:name => "Fred", :age => 36)
-        r.representing @author do
-          r.element :name
-          r.element :age
-        end
-        resulting_json.should == undent(<<-JSON)
-        { 
-          "name": "Fred",
-          "age": 36
-        }
-        JSON
-      end
-      
-    end
-    
   end
 
 end
