@@ -10,7 +10,6 @@ module Representative
       super(subject, options)
       @buffer = ""
       @indent_level = 0
-      open "{"
       yield self if block_given?
     end
     
@@ -56,15 +55,7 @@ module Representative
     end
     
     def to_json
-      original_buffer = @buffer
-      begin
-        @buffer = original_buffer.dup
-        close "}"
-        emit "\n"
-        @buffer
-      ensure
-        @buffer = original_buffer
-      end
+      @buffer + "\n"
     end
 
     private
@@ -86,6 +77,7 @@ module Representative
     end
 
     def emit_label(name)
+      return false if @indent_level == 0
       optional_comma
       newline_and_indent
       emit("#{name.to_s.to_json}: ")

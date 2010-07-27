@@ -12,47 +12,70 @@ describe Representative::Json do
     r.to_json
   end
 
-  describe "with nothing to represent" do
+  describe "at the top level" do
 
-    it "emits an empty object" do
-      resulting_json.should == "{}\n"
+    describe "#element" do
+
+      describe "with an explicit String value" do
+
+        it "outputs the value as JSON" do
+          r.element :name, "Fred"
+          resulting_json.should == %{"Fred"\n}
+        end
+
+      end
+
+      describe "with an explicit integer value" do
+
+        it "outputs the value as JSON" do
+          r.element :age, 36
+          resulting_json.should == "36\n"
+        end
+
+      end
+
+      describe "with a block" do
+
+        it "outputs an object" do
+          r.element :something, Object.new do
+          end
+          resulting_json.should == "{}\n"
+        end
+
+      end
+
     end
 
+    describe "#list_of" do
+
+      describe "with an explicit value" do
+
+        it "outputs the array as JSON" do
+          r.list_of :names, %w(Hewey Dewey Louie)
+          resulting_json.should == undent(<<-JSON)
+          [
+            "Hewey",
+            "Dewey",
+            "Louie"
+          ]
+          JSON
+        end
+
+      end
+
+    end
+    
   end
 
-  describe "#element" do
-
-    describe "with an explicit value" do
-
-      it "generates a named-value" do
-        r.element :name, "Fred"
-        resulting_json.should == undent(<<-JSON)
-        {
-          "name": "Fred"
-        }
-        JSON
-      end
-
-    end
-
-    describe "with an numeric value" do
-
-      it "is represented as a number" do
-        r.element :age, 36
-        resulting_json.should == undent(<<-JSON)
-        {
-          "age": 36
-        }
-        JSON
-      end
-
-    end
-
-    describe "following another element" do
+  describe "within an element block" do
+    
+    describe "#element" do
       
-      it "separates named-values with commas" do
-        r.element :name, "Fred"
-        r.element :age, 36
+      it "generates a labelled values" do
+        r.element :author, Object.new do
+          r.element :name, "Fred"
+          r.element :age, 36
+        end
         resulting_json.should == undent(<<-JSON)
         {
           "name": "Fred",
@@ -63,27 +86,10 @@ describe Representative::Json do
       
     end
 
-    describe "with a block" do
-      
-      it "generates a nested object" do
-        @author = OpenStruct.new(:name => "Fred", :age => 36)
-        r.element :author, "whatever" do
-          r.element :name, "Fred"
-        end
-        resulting_json.should == undent(<<-JSON)
-        { 
-          "author": {
-            "name": "Fred"
-          }
-        }
-        JSON
-      end
-      
-    end
-
     describe "without an explicit value" do
       
       it "extracts the value from the current subject" do
+        pending
         @author = OpenStruct.new(:name => "Fred", :age => 36)
         r.representing @author do
           r.element :name
@@ -99,27 +105,6 @@ describe Representative::Json do
       
     end
     
-  end
-
-  describe "#list_of" do
-
-    describe "with an explicit value" do
-
-      it "generates a named array" do
-        r.list_of :names, %w(Hewey Dewey Louie)
-        resulting_json.should == undent(<<-JSON)
-        {
-          "names": [
-            "Hewey",
-            "Dewey",
-            "Louie"
-          ]
-        }
-        JSON
-      end
-
-    end
-
   end
 
 end
