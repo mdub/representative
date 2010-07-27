@@ -13,7 +13,7 @@ module Representative
       yield self if block_given?
     end
     
-    def element(name, *args)
+    def element(name, *args, &block)
 
       metadata = @inspector.get_metadata(current_subject, name)
       attributes = args.extract_options!.merge(metadata)
@@ -28,9 +28,24 @@ module Representative
 
       raise ArgumentError, "too many arguments" unless args.empty?
 
-      representing(subject_of_element) do
+      emit_label(name)
+      emit_value(subject_of_element, &block)
+      
+    end
 
-        emit_label(name)
+    def list_of(name, values, &block)
+      emit_label(name)
+      open "["
+      values.each do |value|
+        optional_comma
+        newline_and_indent
+        emit_value(value, &block)
+      end
+      close "]"
+    end
+
+    def emit_value(subject)
+      representing(subject) do
         if block_given?
           open "{"
           yield current_subject
@@ -38,20 +53,7 @@ module Representative
         else
           emit(current_subject.to_json)
         end
-
       end
-      
-    end
-
-    def list_of(name, values)
-      emit_label(name)
-      open "["
-      values.each do |value|
-        optional_comma
-        newline_and_indent
-        emit(value.to_json)
-      end
-      close "]"
     end
     
     def to_json

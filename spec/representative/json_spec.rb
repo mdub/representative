@@ -60,7 +60,7 @@ describe Representative::Json do
 
     describe "#list_of" do
 
-      describe "with an explicit value" do
+      describe "with an explicit array value" do
 
         it "outputs the array as JSON" do
           r.list_of :names, %w(Hewey Dewey Louie)
@@ -73,6 +73,38 @@ describe Representative::Json do
           JSON
         end
 
+      end
+
+      describe "with a block" do
+
+        it "generates an object for each array element" do
+          @authors = [
+            OpenStruct.new(:name => "Hewey", :age => 3),
+            OpenStruct.new(:name => "Dewey", :age => 4),
+            OpenStruct.new(:name => "Louie", :age => 5)
+          ]
+          r.list_of :authors, @authors do
+            r.element :name
+            r.element :age
+          end
+          resulting_json.should == undent(<<-JSON)
+          [
+            {
+              "name": "Hewey",
+              "age": 3
+            },
+            {
+              "name": "Dewey",
+              "age": 4
+            },
+            {
+              "name": "Louie",
+              "age": 5
+            }
+          ]
+          JSON
+        end
+        
       end
 
     end
