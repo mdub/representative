@@ -109,6 +109,18 @@ describe Representative::Json do
 
     end
 
+    describe "#comment" do
+      
+      it "inserts a comment" do
+        pending
+        r.comment "now pay attention"
+        resulting_json.should == undent(<<-JSON)
+        // now pay attention
+        JSON
+      end
+      
+    end
+    
   end
 
   describe "within an element block" do
@@ -148,6 +160,27 @@ describe Representative::Json do
 
     end
 
+    describe "#comment" do
+      
+      it "inserts a comment" do
+        pending
+        @author = OpenStruct.new(:name => "Fred", :age => 36)
+        r.element :author, @author do
+          r.element :name
+          r.comment "age is irrelevant"
+          r.element :age
+        end
+        resulting_json.should == undent(<<-JSON)
+        { 
+          "name": "Fred",
+          // age is irrelevant
+          "age": 36
+        }
+        JSON
+      end
+      
+    end
+    
   end
 
 end
