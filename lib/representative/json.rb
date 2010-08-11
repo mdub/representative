@@ -10,6 +10,7 @@ module Representative
       super(subject, options)
       @buffer = ""
       @indent_level = 0
+      now_at :beginning_of_buffer
       yield self if block_given?
     end
     
@@ -37,8 +38,7 @@ module Representative
       label(name)
       inside "[", "]" do
         elements.each do |element|
-          optional_comma
-          newline_and_indent
+          new_item
           value(element, &block)
         end
       end
@@ -54,8 +54,15 @@ module Representative
           emit(current_subject.to_json)
         end
       end
+      now_at :end_of_item
     end
-    
+        
+    def comment(text)
+      new_item
+      emit("// #{text}")
+      now_at :end_of_comment
+    end
+
     def to_json
       @buffer + "\n"
     end
@@ -72,30 +79,34 @@ module Representative
 
     def label(name)
       return false if @indent_level == 0
-      optional_comma
-      newline_and_indent
+      new_item
       emit("#{name.to_s.to_json}: ")
     end
 
-    def optional_comma
-      emit(",") unless @start_of_block
-      @start_of_block = false
-    end
-    
-    def newline_and_indent
-      emit("\n#{indentation}")
+    def new_item
+      emit(",") if at? :end_of_item
+      emit("\n") unless at? :beginning_of_buffer
+      emit(indentation)
+      @pending_comma = ","
     end
     
     def inside(opening_char, closing_char)
       emit(opening_char)
       @indent_level += 1
-      @start_of_block = true
+      now_at :beginning_of_block
       yield
       @indent_level -= 1
-      unless @start_of_block
-        newline_and_indent
-      end
+      emit("\n#{indentation}") unless at? :beginning_of_block
       emit(closing_char)
+      now_at :end_of_item
+    end
+
+    def now_at(state)
+      @state = state
+    end
+
+    def at?(state)
+      @state == state
     end
     
   end

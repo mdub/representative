@@ -112,7 +112,6 @@ describe Representative::Json do
     describe "#comment" do
       
       it "inserts a comment" do
-        pending
         r.comment "now pay attention"
         resulting_json.should == undent(<<-JSON)
         // now pay attention
@@ -163,7 +162,6 @@ describe Representative::Json do
     describe "#comment" do
       
       it "inserts a comment" do
-        pending
         @author = OpenStruct.new(:name => "Fred", :age => 36)
         r.element :author, @author do
           r.element :name
