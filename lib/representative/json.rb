@@ -34,12 +34,14 @@ module Representative
       
     end
 
-    def list_of(name, elements, &block)
+    def list_of(name, *args, &block)
+      list_subject = args.empty? ? name : args.shift
+      items = resolve_value(list_subject)
       label(name)
       inside "[", "]" do
-        elements.each do |element|
+        items.each do |item|
           new_item
-          value(element, &block)
+          value(item, &block)
         end
       end
     end

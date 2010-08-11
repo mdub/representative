@@ -75,6 +75,26 @@ describe Representative::Json do
 
       end
 
+      describe "without an explicit value" do
+
+        it "extracts the value from the current subject" do
+          @donald = OpenStruct.new(:nephews => %w(Hewey Dewey Louie))
+          r.element(:duck, @donald) do
+            r.list_of :nephews
+          end
+          resulting_json.should == undent(<<-JSON)
+          {
+            "nephews": [
+              "Hewey",
+              "Dewey",
+              "Louie"
+            ]
+          }
+          JSON
+        end
+        
+      end
+
       describe "with a block" do
 
         it "generates an object for each array element" do
