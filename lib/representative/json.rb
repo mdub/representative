@@ -68,6 +68,10 @@ module Representative
     def to_json
       @buffer + "\n"
     end
+    
+    def to_s
+      to_json
+    end
 
     private
     

@@ -4,7 +4,7 @@ require "rubygems"
 require "representative/json"
 require "ostruct"
 
-books = [
+@books = [
   OpenStruct.new(
     :title => "Sailing for old dogs", 
     :authors => ["Jim Watson"],
@@ -29,7 +29,7 @@ books = [
 ]
 
 json = Representative::Json.new do |r|
-  r.list_of :books, books do
+  r.list_of :books, @books do
     r.element :title
     r.list_of :authors
     r.element :published do
@@ -39,4 +39,4 @@ json = Representative::Json.new do |r|
   end
 end
 
-puts json.to_json
+puts json.to_s

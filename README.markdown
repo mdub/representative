@@ -1,12 +1,13 @@
 Representative
 ==============
 
-"Representative" makes it easier to create XML representations of your Ruby objects.
-It works best when you want the XML to roughly follow the object structure, 
-but still have complete control of the result.
+"Representative" makes it easier to create XML or JSON representations of your Ruby objects.
 
-Example
--------
+It works best when you want the output to roughly follow the object structure, but still want complete control of the result.
+
+Generating XML
+--------------
+
 
 Given a Ruby data-structure:
 
@@ -34,7 +35,7 @@ Given a Ruby data-structure:
       )
     ]
 
-Representative::Xml can be used to generate XML, in a declarative style:
+Representative::Xml can be used to generate XML:
 
     xml = Builder::XmlMarkup.new(:indent => 2)
 
@@ -53,7 +54,7 @@ Representative::Xml can be used to generate XML, in a declarative style:
 
     puts xml.target!
 
-The resulting XML looks like this:
+which produces:
 
     <books type="array">
       <book>
@@ -88,11 +89,33 @@ The resulting XML looks like this:
 
 Notice that:
 
-- The structure of the XML mirrors the structure described by the nested Ruby blocks.
+- The structure of the output mirrors the structure described by the nested Ruby blocks.
 - Representative walks the object-graph for you.
 - Using `list_of` for a collection attribute generates an "array" element, which plays nicely
   with most Ruby XML-to-hash converters.
 - Where a named object-attribute is nil, you get an empty element.
+
+Generating JSON
+---------------
+
+Representative::Json can be used to generate JSON, using exactly the same DSL:
+
+    json = Representative::Json.new do |r|
+      r.list_of :books, books do
+        r.element :title
+        r.list_of :authors
+        r.element :published do
+          r.element :by
+          r.element :year
+        end
+      end
+    end
+
+    puts json.to_s
+
+producing:
+
+    ... JSON goes here ...
 
 Installation
 ------------

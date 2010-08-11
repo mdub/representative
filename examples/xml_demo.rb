@@ -4,7 +4,7 @@ require "rubygems"
 require "representative/xml"
 require "ostruct"
 
-books = [
+@books = [
   OpenStruct.new(
     :title => "Sailing for old dogs", 
     :authors => ["Jim Watson"],
@@ -30,7 +30,7 @@ books = [
 
 xml = Builder::XmlMarkup.new(:indent => 2)
 Representative::Xml.new(xml) do |r|
-  r.list_of :books, books do
+  r.list_of :books, @books do
     r.element :title
     r.list_of :authors
     r.element :published do
