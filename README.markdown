@@ -8,10 +8,9 @@ It works best when you want the output to roughly follow the object structure, b
 Generating XML
 --------------
 
-
 Given a Ruby data-structure:
 
-    books = [
+    @books = [
       OpenStruct.new(
         :title => "Sailing for old dogs", 
         :authors => ["Jim Watson"],
@@ -41,7 +40,7 @@ Representative::Xml can be used to generate XML:
 
     Representative::Xml.new(xml) do |r|
     
-      r.list_of :books, books do
+      r.list_of :books, @books do
         r.element :title
         r.list_of :authors
         r.element :published do
@@ -101,7 +100,8 @@ Generating JSON
 Representative::Json can be used to generate JSON, using exactly the same DSL:
 
     json = Representative::Json.new do |r|
-      r.list_of :books, books do
+    
+      r.list_of :books, @books do
         r.element :title
         r.list_of :authors
         r.element :published do
@@ -109,13 +109,43 @@ Representative::Json can be used to generate JSON, using exactly the same DSL:
           r.element :year
         end
       end
+
     end
 
     puts json.to_s
 
 producing:
 
-    ... JSON goes here ...
+    [
+      {
+        "title": "Sailing for old dogs",
+        "authors": [
+          "Jim Watson"
+        ],
+        "published": {
+          "by": "Credulous Print",
+          "year": 1994
+        }
+      },
+      {
+        "title": "On the horizon",
+        "authors": [
+          "Zoe Primpton",
+          "Stan Ford"
+        ],
+        "published": {
+          "by": "McGraw-Hill",
+          "year": 2005
+        }
+      },
+      {
+        "title": "The Little Blue Book of VHS Programming",
+        "authors": [
+          "Henry Nelson"
+        ],
+        "published": null
+      }
+    ]
 
 Installation
 ------------

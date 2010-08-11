@@ -29,7 +29,9 @@ require "ostruct"
 ]
 
 xml = Builder::XmlMarkup.new(:indent => 2)
+
 Representative::Xml.new(xml) do |r|
+
   r.list_of :books, @books do
     r.element :title
     r.list_of :authors
@@ -38,6 +40,7 @@ Representative::Xml.new(xml) do |r|
       r.element :year
     end
   end
+
 end
 
 puts xml.target!

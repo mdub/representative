@@ -29,6 +29,7 @@ require "ostruct"
 ]
 
 json = Representative::Json.new do |r|
+
   r.list_of :books, @books do
     r.element :title
     r.list_of :authors
@@ -37,6 +38,7 @@ json = Representative::Json.new do |r|
       r.element :year
     end
   end
+
 end
 
 puts json.to_s
