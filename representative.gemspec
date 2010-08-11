@@ -4,7 +4,7 @@ require "representative/version"
 Gem::Specification.new do |gem|
 
   gem.name = "representative"
-  gem.summary = "Builds XML representations of your Ruby objects"
+  gem.summary = "Builds XML and JSON representations of your Ruby objects"
   gem.homepage = "http://github.com/mdub/representative"
   gem.authors = ["Mike Williams"]
   gem.email = "mdub@dogbiscuit.org"
