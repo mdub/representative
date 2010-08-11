@@ -33,6 +33,26 @@ describe Representative::Json do
         end
 
       end
+      
+      describe "with a nil value" do
+        
+        it "generates null" do
+          r.element :flavour, nil
+          resulting_json.should == "null\n"
+        end
+
+        describe "and a block" do
+
+          it "generates null" do
+            r.element :book, nil do
+              r.element :author
+            end
+            resulting_json.should == "null\n"
+          end
+
+        end
+        
+      end
 
       describe "without an explicit value" do
 

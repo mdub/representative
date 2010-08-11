@@ -48,7 +48,7 @@ module Representative
 
     def value(subject)
       representing(subject) do
-        if block_given?
+        if block_given? && !current_subject.nil?
           inside "{", "}" do
             yield current_subject
           end
