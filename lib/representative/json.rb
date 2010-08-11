@@ -35,21 +35,21 @@ module Representative
 
     def list_of(name, elements, &block)
       label(name)
-      open "["
-      elements.each do |element|
-        optional_comma
-        newline_and_indent
-        value(element, &block)
+      inside "[", "]" do
+        elements.each do |element|
+          optional_comma
+          newline_and_indent
+          value(element, &block)
+        end
       end
-      close "]"
     end
 
     def value(subject)
       representing(subject) do
         if block_given?
-          open "{"
-          yield current_subject
-          close "}"
+          inside "{", "}" do
+            yield current_subject
+          end
         else
           emit(current_subject.to_json)
         end
@@ -70,14 +70,6 @@ module Representative
       ("  " * @indent_level)
     end
 
-    def increase_indent
-      @indent_level += 1
-    end
-
-    def decrease_indent
-      @indent_level -= 1
-    end
-
     def label(name)
       return false if @indent_level == 0
       optional_comma
@@ -94,14 +86,12 @@ module Representative
       emit("\n#{indentation}")
     end
     
-    def open(opening_char)
+    def inside(opening_char, closing_char)
       emit(opening_char)
-      increase_indent
+      @indent_level += 1
       @start_of_block = true
-    end
-
-    def close(closing_char)
-      decrease_indent
+      yield
+      @indent_level -= 1
       unless @start_of_block
         newline_and_indent
       end
