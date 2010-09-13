@@ -115,7 +115,7 @@ module Representative
       item_attributes = options[:item_attributes] || {}
 
       items = resolve_value(list_subject)
-      element(name, items, list_attributes.merge(:type => lambda{"array"})) do
+      element(name, items, list_attributes.merge(:type => proc{"array"})) do
         items.each do |item|
           element(item_name, item, item_attributes, &block)
         end
