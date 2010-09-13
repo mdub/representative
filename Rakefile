@@ -2,16 +2,6 @@ require "rubygems"
 require "rake"
 require "rake/clean"
 
-def with_gem(gem_name, lib = gem_name)
-  begin
-    require(lib)
-  rescue LoadError
-    $stderr.puts "WARNING: can't load #{lib}.  Install it with: sudo gem install #{gem_name}"
-    return false
-  end
-  yield
-end
-
 require "spec/rake/spectask"
 
 Spec::Rake::SpecTask.new(:spec) do |spec|
@@ -29,11 +19,10 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-with_gem "yard" do
+require "yard"
 
-  YARD::Rake::YardocTask.new(:yardoc) do |t|
-    t.files   = FileList['lib/**/*.rb']
-  end
-  CLEAN << "doc"
-
+YARD::Rake::YardocTask.new(:yardoc) do |t|
+  t.files   = FileList['lib/**/*.rb']
 end
+
+CLEAN << "doc"
