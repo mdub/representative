@@ -1,5 +1,5 @@
-require "active_support/core_ext/array"
-require "active_support/core_ext/string"
+require "active_support/core_ext"
+require "active_support/core_ext"
 require "builder"
 require "representative/base"
 require "representative/empty"
