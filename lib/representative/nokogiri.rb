@@ -1,0 +1,79 @@
+require "active_support/core_ext"
+require "nokogiri"
+require "representative/base"
+require "representative/empty"
+
+module Representative
+  
+  class Nokogiri < Base
+    
+    def initialize(subject = nil, options = {})
+      super(subject, options)
+      @doc = ::Nokogiri::XML::Document.new
+      @current_element = @doc
+      yield self if block_given?
+    end
+
+    attr_reader :doc, :current_element
+
+    def to_xml(*args)
+      doc.to_xml(*args)
+    end
+    
+    def element(name, *args, &block)
+
+      metadata = @inspector.get_metadata(current_subject, name)
+      attributes = args.extract_options!.merge(metadata)
+
+      subject_of_element = if args.empty? 
+        lambda do |subject|
+          @inspector.get_value(current_subject, name)
+        end
+      else 
+        args.shift
+      end
+
+      raise ArgumentError, "too many arguments" unless args.empty?
+
+      representing(subject_of_element) do
+
+        content_string = nil
+
+        unless current_subject.nil?
+          unless block
+            content_string = current_subject.to_s
+          end
+        end
+      
+        resolved_attributes = resolve_attributes(attributes)
+        tag_args = [content_string, resolved_attributes].compact
+
+        new_element = doc.create_element(name.to_s.dasherize, *tag_args)
+        current_element.add_child(new_element)
+
+        if block && block != Representative::EMPTY
+          with_current_element(new_element) do
+            block.call(current_subject) 
+          end
+        end
+
+      end
+
+    end
+
+    private
+    
+    def with_current_element(element)
+      return unless block_given?
+      old_element = @current_element
+      begin
+        @current_element = element
+        yield
+      ensure
+        @current_element = old_element
+      end
+    end
+    
+  end
+  
+end

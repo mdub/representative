@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 require "representative/xml"
-require "rexml/document"
-
 require "representative/xml_behaviour"
+require "rexml/document"
 
 describe Representative::Xml do
 
