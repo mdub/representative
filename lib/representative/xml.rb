@@ -29,7 +29,7 @@ module Representative
     
     def generate_element(name, resolved_attributes, content_string, &content_block)
       tag_args = [content_string, resolved_attributes].compact
-      @xml.tag!(name.to_s.dasherize, *tag_args, &content_block)
+      @xml.tag!(name, *tag_args, &content_block)
     end
     
   end

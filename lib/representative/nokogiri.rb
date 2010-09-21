@@ -33,21 +33,18 @@ module Representative
 
     private
     
-    def generate_element(name, resolved_attributes, content_string, &content_block)
+    def generate_element(name, resolved_attributes, content_string)
       tag_args = [content_string, resolved_attributes].compact
-      new_element = doc.create_element(name.to_s.dasherize, *tag_args)
+      new_element = doc.create_element(name, *tag_args)
       current_element.add_child(new_element)
-      with_current_element(new_element, &content_block)
-    end
-    
-    def with_current_element(element)
-      return unless block_given?
-      old_element = @current_element
-      begin
-        @current_element = element
-        yield
-      ensure
-        @current_element = old_element
+      if block_given?
+        old_element = @current_element
+        begin
+          @current_element = new_element
+          yield 
+        ensure
+          @current_element = old_element
+        end
       end
     end
     

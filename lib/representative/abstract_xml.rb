@@ -52,13 +52,19 @@ module Representative
       representing(subject_of_element) do
 
         resolved_attributes = resolve_attributes(attributes)
-
-        content_string = current_subject.to_s unless (block || current_subject.nil?)
-        content_block = if block && block != Representative::EMPTY && !current_subject.nil?
-          Proc.new { block.call(current_subject) }
+        content_string = content_block = nil
+        
+        unless current_subject.nil?
+          if block
+            unless block == Representative::EMPTY
+              content_block = Proc.new { block.call(current_subject) }
+            end
+          else
+            content_string = current_subject.to_s
+          end
         end
       
-        generate_element(name, resolved_attributes, content_string, &content_block)
+        generate_element(name.to_s.dasherize, resolved_attributes, content_string, &content_block)
 
       end
 
