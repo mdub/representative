@@ -23,56 +23,22 @@ module Representative
     def to_xml(*args)
       doc.to_xml(*args)
     end
-    
-    def element(name, *args, &block)
-
-      metadata = @inspector.get_metadata(current_subject, name)
-      attributes = args.extract_options!.merge(metadata)
-
-      subject_of_element = if args.empty? 
-        lambda do |subject|
-          @inspector.get_value(current_subject, name)
-        end
-      else 
-        args.shift
-      end
-
-      raise ArgumentError, "too many arguments" unless args.empty?
-
-      representing(subject_of_element) do
-
-        resolved_attributes = resolve_attributes(attributes)
-
-        content_string = nil
-
-        unless current_subject.nil?
-          unless block
-            content_string = current_subject.to_s
-          end
-        end
-      
-        tag_args = [content_string, resolved_attributes].compact
-
-        new_element = doc.create_element(name.to_s.dasherize, *tag_args)
-        current_element.add_child(new_element)
-
-        if block && block != Representative::EMPTY && !current_subject.nil?
-          with_current_element(new_element) do
-            block.call(current_subject) 
-          end
-        end
-
-      end
-
-    end
 
     # Generate a comment
+    #
     def comment(text)
       comment_node = ::Nokogiri::XML::Comment.new(doc, " #{text} ")
       current_element.add_child(comment_node)
     end
 
     private
+    
+    def generate_element(name, resolved_attributes, content_string, &content_block)
+      tag_args = [content_string, resolved_attributes].compact
+      new_element = doc.create_element(name.to_s.dasherize, *tag_args)
+      current_element.add_child(new_element)
+      with_current_element(new_element, &content_block)
+    end
     
     def with_current_element(element)
       return unless block_given?
