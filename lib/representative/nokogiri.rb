@@ -1,11 +1,13 @@
 require "active_support/core_ext"
 require "nokogiri"
-require "representative/base"
+require "representative/abstract_xml"
 require "representative/empty"
 
 module Representative
   
-  class Nokogiri < Base
+  # Easily generate XML while traversing an object-graph.
+  #
+  class Nokogiri < AbstractXml
     
     def initialize(subject = nil, options = {})
       super(subject, options)
@@ -16,6 +18,8 @@ module Representative
 
     attr_reader :doc, :current_element
 
+    # Serialize the generated document as XML
+    #
     def to_xml(*args)
       doc.to_xml(*args)
     end
@@ -37,6 +41,8 @@ module Representative
 
       representing(subject_of_element) do
 
+        resolved_attributes = resolve_attributes(attributes)
+
         content_string = nil
 
         unless current_subject.nil?
@@ -45,7 +51,6 @@ module Representative
           end
         end
       
-        resolved_attributes = resolve_attributes(attributes)
         tag_args = [content_string, resolved_attributes].compact
 
         new_element = doc.create_element(name.to_s.dasherize, *tag_args)
@@ -61,29 +66,6 @@ module Representative
 
     end
 
-    def list_of(name, *args, &block)
-
-      options = args.extract_options!
-      list_subject = args.empty? ? name : args.shift
-      raise ArgumentError, "too many arguments" unless args.empty?
-
-      list_attributes = options[:list_attributes] || {}
-      item_name = options[:item_name] || name.to_s.singularize
-      item_attributes = options[:item_attributes] || {}
-
-      items = resolve_value(list_subject)
-      element(name, items, list_attributes.merge(:type => proc{"array"})) do
-        items.each do |item|
-          element(item_name, item, item_attributes, &block)
-        end
-      end
-
-    end
-
-    def empty
-      Representative::EMPTY
-    end
-    
     # Generate a comment
     def comment(text)
       comment_node = ::Nokogiri::XML::Comment.new(doc, " #{text} ")
