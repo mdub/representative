@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+require "rexml/document"
+
 shared_examples_for "an XML Representative" do
 
   describe "for some 'subject'" do

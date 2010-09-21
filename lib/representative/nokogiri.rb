@@ -61,6 +61,25 @@ module Representative
 
     end
 
+    def list_of(name, *args, &block)
+
+      options = args.extract_options!
+      list_subject = args.empty? ? name : args.shift
+      raise ArgumentError, "too many arguments" unless args.empty?
+
+      list_attributes = options[:list_attributes] || {}
+      item_name = options[:item_name] || name.to_s.singularize
+      item_attributes = options[:item_attributes] || {}
+
+      items = resolve_value(list_subject)
+      element(name, items, list_attributes.merge(:type => proc{"array"})) do
+        items.each do |item|
+          element(item_name, item, item_attributes, &block)
+        end
+      end
+
+    end
+
     def empty
       Representative::EMPTY
     end
