@@ -48,7 +48,7 @@ end
 
 iterations = 1000
 
-Benchmark.bmbm do |x|
+Benchmark.bm(12) do |x|
 
   x.report("builder") do
     iterations.times do
