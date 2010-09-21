@@ -51,7 +51,7 @@ module Representative
         new_element = doc.create_element(name.to_s.dasherize, *tag_args)
         current_element.add_child(new_element)
 
-        if block && block != Representative::EMPTY
+        if block && block != Representative::EMPTY && !current_subject.nil?
           with_current_element(new_element) do
             block.call(current_subject) 
           end
@@ -59,6 +59,16 @@ module Representative
 
       end
 
+    end
+
+    def empty
+      Representative::EMPTY
+    end
+    
+    # Generate a comment
+    def comment(text)
+      comment_node = ::Nokogiri::XML::Comment.new(doc, " #{text} ")
+      current_element.add_child(comment_node)
     end
 
     private
