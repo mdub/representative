@@ -46,34 +46,43 @@ def represent_books_using(r)
 
 end
 
-iterations = 1000
-
-Benchmark.bm(12) do |x|
-
-  x.report("builder") do
-    iterations.times do
-      xml = Builder::XmlMarkup.new(:indent => 2)
-      r = Representative::Xml.new(xml)
-      represent_books_using(r)
-      xml.target!
-    end
-  end
-
-  x.report("nokogiri") do
-    iterations.times do
-      xml = Builder::XmlMarkup.new(:indent => 2)
-      r = Representative::Nokogiri.new
-      represent_books_using(r)
-      r.to_xml
-    end
-  end
-
-  x.report("json") do
-    iterations.times do
-      r = Representative::Json.new
-      represent_books_using(r)
-      r.to_json
-    end
-  end
-
+def iterations
+  1000
 end
+
+def bm
+  Benchmark.bm(12) do |x|
+    x.report("builder") { builder }
+    x.report("nokogiri") { nokogiri }
+    x.report("json") { json }
+  end
+end
+
+def builder
+  iterations.times do
+    xml = Builder::XmlMarkup.new(:indent => 2)
+    r = Representative::Xml.new(xml)
+    represent_books_using(r)
+    xml.target!
+  end
+end
+
+def nokogiri
+  iterations.times do
+    xml = Builder::XmlMarkup.new(:indent => 2)
+    r = Representative::Nokogiri.new
+    represent_books_using(r)
+    r.to_xml
+  end
+end
+
+def json
+  iterations.times do
+    r = Representative::Json.new
+    represent_books_using(r)
+    r.to_json
+  end
+end
+
+action = ARGV.first || "bm"
+self.send(action)
