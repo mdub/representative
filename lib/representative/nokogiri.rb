@@ -30,6 +30,14 @@ module Representative
       comment_node = ::Nokogiri::XML::Comment.new(doc, " #{text} ")
       current_element.add_child(comment_node)
     end
+    
+    def attribute(name, value_generator = name)
+      attribute_name = name.to_s.dasherize
+      value = resolve_value(value_generator)
+      unless value.nil?
+        current_element[attribute_name] = value.to_s
+      end
+    end
 
     private
     
