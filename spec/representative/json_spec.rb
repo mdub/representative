@@ -199,6 +199,23 @@ describe Representative::Json do
 
     end
 
+    describe "#attribute" do
+      
+      it "generates labelled values, with a label prefix" do
+        r.element :author, Object.new do
+          r.attribute :href, "http://example.com/authors/1"
+          r.element :name, "Fred"
+        end
+        resulting_json.should == undent(<<-JSON)
+        {
+          "@href": "http://example.com/authors/1",
+          "name": "Fred"
+        }
+        JSON
+      end
+      
+    end
+    
     describe "#comment" do
       
       it "inserts a comment" do

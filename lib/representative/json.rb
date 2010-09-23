@@ -5,14 +5,19 @@ require "json"
 module Representative
   
   class Json < Base
+
+    DEFAULT_ATTRIBUTE_PREFIX = "@".freeze
     
     def initialize(subject = nil, options = {})
       super(subject, options)
       @buffer = ""
       @indent_level = 0
+      @attribute_prefix = options[:attribute_prefix] || DEFAULT_ATTRIBUTE_PREFIX
       now_at :beginning_of_buffer
       yield self if block_given?
     end
+    
+    attr_reader :attribute_prefix
     
     def element(name, *args, &block)
 
@@ -34,6 +39,10 @@ module Representative
       
     end
 
+    def attribute(name, value_generator = name)
+      element(attribute_prefix + name.to_s, value_generator)
+    end
+    
     def list_of(name, *args, &block)
       list_subject = args.empty? ? name : args.shift
       items = resolve_value(list_subject)
