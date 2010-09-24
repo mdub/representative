@@ -53,6 +53,38 @@ describe Representative::Json do
         end
         
       end
+      
+      describe "with attributes" do
+        
+        describe "and a block" do
+          
+          it "generates labelled fields for the attributes" do
+            @book = OpenStruct.new(:lang => "fr", :title => "En Edge")
+            r.element :book, @book, :lang => :lang do
+              r.element :title
+            end
+            resulting_json.should == undent(<<-JSON)
+            {
+              "@lang": "fr",
+              "title": "En Edge"
+            }
+            JSON
+          end
+          
+        end
+
+        describe "and an explicit value" do
+          
+          it "ignores the attributes" do
+            r.element :review, "Blah de blah", :lang => "fr"
+            resulting_json.should == undent(<<-JSON)
+            "Blah de blah"
+            JSON
+          end
+          
+        end
+        
+      end
 
       describe "without an explicit value" do
 

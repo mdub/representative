@@ -35,7 +35,7 @@ module Representative
       raise ArgumentError, "too many arguments" unless args.empty?
 
       label(name)
-      value(subject_of_element, &block)
+      value(subject_of_element, attributes, &block)
       
     end
 
@@ -55,10 +55,13 @@ module Representative
       end
     end
 
-    def value(subject)
+    def value(subject, attributes = {})
       representing(subject) do
         if block_given? && !current_subject.nil?
           inside "{", "}" do
+            attributes.each do |name, value_generator|
+              attribute(name, value_generator)
+            end
             yield current_subject
           end
         else
