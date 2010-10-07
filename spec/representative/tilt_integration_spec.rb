@@ -12,13 +12,13 @@ describe Representative::Tilt do
   def render(*args, &block)
     @output = @template.render(*args, &block)
   end
-  
+
   describe "XML template" do
-  
+
     def resulting_xml
       @output.sub(/^<\?xml.*\n/, '')
     end
-      
+
     describe "#render" do
 
       it "generates XML" do
@@ -32,9 +32,9 @@ describe Representative::Tilt do
       it "provides access to scope" do
 
         with_template("whatever.xml.rep", <<-RUBY)
-          r.element :author, @mike do
-            r.element :name
-          end
+        r.element :author, @mike do
+          r.element :name
+        end
         RUBY
 
         scope = Object.new
@@ -54,9 +54,9 @@ describe Representative::Tilt do
       it "provides access to local variables" do
 
         with_template("whatever.xml.rep", <<-RUBY)
-          r.element :author, author do
-            r.element :name
-          end
+        r.element :author, author do
+          r.element :name
+        end
         RUBY
 
         render(Object.new, {:author => OpenStruct.new(:name => "Mike")})
@@ -68,7 +68,67 @@ describe Representative::Tilt do
         XML
 
       end
-      
+
+    end
+
+  end
+  
+  describe "JSON template" do
+
+    def resulting_json
+      @output.sub(/^<\?xml.*\n/, '')
+    end
+
+    describe "#render" do
+
+      it "generates JSON" do
+        with_template("whatever.json.rep", <<-RUBY)
+        r.element :foo, "bar"
+        RUBY
+        render
+        resulting_json.should == %{"bar"\n}
+      end
+
+      it "provides access to scope" do
+
+        with_template("whatever.json.rep", <<-RUBY)
+          r.element :author, @mike do
+            r.element :name
+          end
+        RUBY
+
+        scope = Object.new
+        scope.instance_eval do
+          @mike = OpenStruct.new(:name => "Mike")
+        end
+        render(scope)
+
+        resulting_json.should == undent(<<-JSON)
+          {
+            "name": "Mike"
+          }
+        JSON
+
+      end
+
+      it "provides access to local variables" do
+
+        with_template("whatever.json.rep", <<-RUBY)
+          r.element :author, author do
+            r.element :name
+          end
+        RUBY
+
+        render(Object.new, {:author => OpenStruct.new(:name => "Mike")})
+
+        resulting_json.should == undent(<<-JSON)
+          {
+            "name": "Mike"
+          }
+        JSON
+
+      end
+
     end
 
   end
