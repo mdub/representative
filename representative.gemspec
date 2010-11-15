@@ -20,7 +20,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency("rspec", "~> 1.3.0")
   gem.add_development_dependency("tilt", ">= 0.9")
   gem.add_development_dependency("nokogiri", "~> 1.4.2")
-  gem.add_development_dependency("yard", "~> 0.5.8")
   gem.add_development_dependency("diff-lcs")
 
   gem.require_path = "lib"

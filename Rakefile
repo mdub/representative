@@ -19,10 +19,3 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-require "yard"
-
-YARD::Rake::YardocTask.new(:yardoc) do |t|
-  t.files   = FileList['lib/**/*.rb']
-end
-
-CLEAN << "doc"
