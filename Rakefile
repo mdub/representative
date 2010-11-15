@@ -1,6 +1,8 @@
-require "rubygems"
 require "rake"
-require "rake/clean"
+
+require 'bundler'
+
+Bundler::GemHelper.install_tasks
 
 require "spec/rake/spectask"
 
