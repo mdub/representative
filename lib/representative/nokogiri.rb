@@ -24,6 +24,10 @@ module Representative
       doc.to_xml(*args)
     end
 
+    def to_s
+      to_xml
+    end
+
     # Generate a comment
     #
     def comment(text)
