@@ -44,17 +44,23 @@ module Representative
     end
     
     def list_of(name, *args, &block)
+      options = args.extract_options!
       list_subject = args.empty? ? name : args.shift
+      raise ArgumentError, "too many arguments" unless args.empty?
+      list_attributes = options[:list_attributes]
+      raise ArgumentError, "list_attributes #{list_attributes} not supported for json representation" if list_attributes
+      item_attributes = options[:item_attributes] || {}
+
       items = resolve_value(list_subject)
       label(name)
       inside "[", "]" do
         items.each do |item|
           new_item
-          value(item, &block)
+          value(item, item_attributes, &block)
         end
       end
     end
-
+    
     def value(subject, attributes = {})
       representing(subject) do
         if block_given? && !current_subject.nil?
