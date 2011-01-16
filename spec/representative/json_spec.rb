@@ -218,6 +218,15 @@ describe Representative::Json do
           lambda{ r.list_of(:authors, @authors, :list_attributes => {}) {} }.should raise_exception(ArgumentError)
         end
       end
+      
+      describe "with unnecessary arguments" do
+        it "raises an ArgumentError" do
+          @authors = []
+          lambda{ 
+            r.list_of(:authors, @authors, :unecessary_arg_should_cause_failure, :item_attributes => {}){} 
+          }.should raise_exception(ArgumentError)
+        end
+      end
 
     end
 
