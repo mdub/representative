@@ -1,3 +1,3 @@
 module Representative
-  VERSION = "0.3.3.dev".freeze
+  VERSION = "0.3.3".freeze
 end
