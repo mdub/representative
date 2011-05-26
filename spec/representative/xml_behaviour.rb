@@ -23,6 +23,16 @@ shared_examples_for "an XML Representative" do
         resulting_xml.should == %(<full-name>Fredrick</full-name>)
       end
 
+      context "with an explicit element-naming strategy" do
+
+        it "applies the naming strategy to produce element names" do
+          @subject.full_name = "Fredrick"
+          r(:naming_strategy => :camelcase).element :full_name
+          resulting_xml.should == %(<fullName>Fredrick</fullName>)
+        end
+
+      end
+
       describe "with attributes" do
 
         it "generates attributes on the element" do

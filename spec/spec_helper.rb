@@ -1,7 +1,5 @@
 require 'rspec'
 
-require "rubygems"
-
 def undent(raw)
   if raw =~ /\A( +)/
     indent = $1

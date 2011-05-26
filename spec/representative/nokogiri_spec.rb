@@ -6,8 +6,8 @@ require "representative/xml_behaviour"
 
 describe Representative::Nokogiri do
 
-  def r
-    @representative ||= Representative::Nokogiri.new(@subject)
+  def r(options = {})
+    @representative ||= Representative::Nokogiri.new(@subject, options)
   end
 
   def resulting_xml

@@ -4,6 +4,11 @@ module Representative
   
   class AbstractXml < Base
 
+    def initialize(subject = nil, options = {})
+      super(subject, options)
+      @naming_strategy = options[:naming_strategy] || :dasherize
+    end
+
     # Generate an element.
     #
     # With two arguments, it generates an element with the specified text content.
@@ -64,7 +69,7 @@ module Representative
           end
         end
       
-        generate_element(name.to_s.dasherize, resolved_attributes, content_string, &content_block)
+        generate_element(format_name(name), resolved_attributes, content_string, &content_block)
 
       end
 
@@ -114,12 +119,28 @@ module Representative
     end
 
     private
+
+    attr_reader :naming_strategy
+    
+    def format_name(name)
+      name = name.to_s
+      case naming_strategy
+      when :camelcase
+        name.camelcase(:lower)
+      when :dasherize
+        name.dasherize
+      when Symbol
+        name.send(naming_strategy)
+      else
+        naming_strategy.to_proc.call(name)
+      end
+    end
     
     def resolve_attributes(attributes)
       if attributes
         attributes.inject({}) do |resolved, (name, value_generator)|
           resolved_value = resolve_value(value_generator)
-          resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
+          resolved[format_name(name)] = resolved_value unless resolved_value.nil?
           resolved
         end
       end

@@ -7,6 +7,7 @@ module Representative
     def initialize(subject = nil, options = {})
       @subjects = [subject]
       @inspector = options[:inspector] || ObjectInspector.new
+      @naming_strategy = options[:naming_strategy]
     end
 
     # Return the current "subject" of representation.  

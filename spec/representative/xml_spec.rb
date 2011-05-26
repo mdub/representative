@@ -10,8 +10,8 @@ describe Representative::Xml do
     @xml = Builder::XmlMarkup.new
   end
 
-  def r
-    @representative ||= Representative::Xml.new(@xml, @subject)
+  def r(options = {})
+    @representative ||= Representative::Xml.new(@xml, @subject, options)
   end
 
   def resulting_xml
