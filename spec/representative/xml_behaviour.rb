@@ -73,11 +73,20 @@ shared_examples_for "an XML Representative" do
 
       end
 
+      describe "with a Symbol argument" do
+
+        it "calls the named method to generate a value" do
+          r.element :name, :width
+          resulting_xml.should == %(<name>200</name>)
+        end
+
+      end
+
       describe "with a value argument that supports #to_proc" do
 
         it "calls the Proc on the subject to generate a value" do
-          r.element :name, :width
-          resulting_xml.should == %(<name>200</name>)
+          r.element :name, (lambda { |x| x.width * 3 })
+          resulting_xml.should == %(<name>600</name>)
         end
 
       end
