@@ -6,7 +6,7 @@ module Representative
 
     def initialize(subject = nil, options = {})
       super(subject, options)
-      @naming_strategy = options[:naming_strategy] || :dasherize
+      @naming_strategy = options.fetch(:naming_strategy, :dasherize)
     end
 
     # Generate an element.
@@ -125,6 +125,8 @@ module Representative
     def format_name(name)
       name = name.to_s
       case naming_strategy
+      when nil
+        name
       when :camelcase
         name.camelcase(:lower)
       when :dasherize
