@@ -12,23 +12,35 @@ shared_examples_for "an XML Representative" do
 
     describe "#element" do
 
+      before do
+        @subject.full_name = "Fredrick"
+      end
+      
       it "generates an element with content extracted from the subject" do
         r.element :name
         resulting_xml.should == %(<name>Fred</name>)
       end
 
       it "dasherizes the property name" do
-        @subject.full_name = "Fredrick"
         r.element :full_name
         resulting_xml.should == %(<full-name>Fredrick</full-name>)
       end
 
-      context "with an explicit element-naming strategy" do
+      context "with naming_strategy :camelcase" do
 
         it "applies the naming strategy to produce element names" do
-          @subject.full_name = "Fredrick"
           r(:naming_strategy => :camelcase).element :full_name
           resulting_xml.should == %(<fullName>Fredrick</fullName>)
+        end
+
+      end
+
+      context "with a custom naming_strategy" do
+
+        it "applies the naming strategy to produce element names" do
+          biff = lambda { |name| name.upcase }
+          r(:naming_strategy => biff).element :full_name
+          resulting_xml.should == %(<FULL_NAME>Fredrick</FULL_NAME>)
         end
 
       end
