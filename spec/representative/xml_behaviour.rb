@@ -280,16 +280,16 @@ shared_examples_for "an XML Representative" do
 
     context "with naming_strategy :camelcase" do
 
-      it "applies the naming strategy to produce element names" do
-        r(:naming_strategy => :camelcase).element :full_name
-        resulting_xml.should == %(<fullName>Fredrick</fullName>)
+      it "generates camelCased element and attribute names" do
+        r(:naming_strategy => :camelcase).element :full_name, :foo_bar => 5
+        resulting_xml.should == %(<fullName fooBar="5">Fredrick</fullName>)
       end
 
     end
 
     context "with a custom naming_strategy" do
 
-      it "applies the naming strategy to produce element names" do
+      it "generates suitably transformed names" do
         biff = lambda { |name| name.upcase }
         r(:naming_strategy => biff).element :full_name
         resulting_xml.should == %(<FULL_NAME>Fredrick</FULL_NAME>)
@@ -299,7 +299,7 @@ shared_examples_for "an XML Representative" do
 
     context "with no naming_strategy" do
 
-      it "use raw names" do
+      it "uses raw names" do
         r(:naming_strategy => nil).element :full_name
         resulting_xml.should == %(<full_name>Fredrick</full_name>)
       end
