@@ -112,6 +112,18 @@ module Representative
     def empty
       Representative::EMPTY
     end
+
+    private
+    
+    def resolve_attributes(attributes)
+      if attributes
+        attributes.inject({}) do |resolved, (name, value_generator)|
+          resolved_value = resolve_value(value_generator)
+          resolved[name.to_s.dasherize] = resolved_value unless resolved_value.nil?
+          resolved
+        end
+      end
+    end
         
   end
   
