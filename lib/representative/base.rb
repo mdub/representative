@@ -7,7 +7,7 @@ module Representative
     def initialize(subject = nil, options = {})
       @subjects = [subject]
       @inspector = options[:inspector] || ObjectInspector.new
-      @naming_strategy = options[:naming_strategy]
+      @naming_strategy = options[:naming_strategy] || :plain
     end
 
     # Return the current "subject" of representation.  
@@ -47,6 +47,20 @@ module Representative
         value_generator.to_proc.call(current_subject) unless current_subject.nil?
       else
         value_generator
+      end
+    end
+    
+    def format_name(name)
+      name = name.to_s
+      case @naming_strategy
+      when :plain
+        name
+      when :camelcase, :camelCase
+        name.camelcase(:lower)
+      when Symbol
+        name.send(@naming_strategy)
+      else
+        @naming_strategy.to_proc.call(name)
       end
     end
     

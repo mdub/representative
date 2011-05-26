@@ -5,8 +5,10 @@ module Representative
   class AbstractXml < Base
 
     def initialize(subject = nil, options = {})
+      unless options.has_key?(:naming_strategy)
+        options = options.merge!(:naming_strategy => :dasherize)
+      end
       super(subject, options)
-      @naming_strategy = options.fetch(:naming_strategy, :dasherize)
     end
 
     # Generate an element.
@@ -120,24 +122,6 @@ module Representative
 
     private
 
-    attr_reader :naming_strategy
-    
-    def format_name(name)
-      name = name.to_s
-      case naming_strategy
-      when nil
-        name
-      when :camelcase
-        name.camelcase(:lower)
-      when :dasherize
-        name.dasherize
-      when Symbol
-        name.send(naming_strategy)
-      else
-        naming_strategy.to_proc.call(name)
-      end
-    end
-    
     def resolve_attributes(attributes)
       if attributes
         attributes.inject({}) do |resolved, (name, value_generator)|

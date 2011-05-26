@@ -104,7 +104,7 @@ module Representative
     def label(name)
       return false if @indent_level == 0
       new_item
-      emit("#{name.to_s.to_json}: ")
+      emit("#{format_name(name).to_json}: ")
     end
 
     def new_item

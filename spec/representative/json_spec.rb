@@ -4,8 +4,8 @@ require "representative/json"
 
 describe Representative::Json do
 
-  def r
-    @representative ||= Representative::Json.new(@subject)
+  def r(options = {})
+    @representative ||= Representative::Json.new(@subject, options)
   end
 
   def resulting_json
@@ -317,6 +317,39 @@ describe Representative::Json do
       
     end
     
+  end
+
+  context "by default" do
+    
+    it "does not tranform element names" do
+      r.element :user, Object.new do
+        r.element :full_name, "Fred Bloggs"
+      end
+      resulting_json.should == undent(<<-JSON)
+      { 
+        "full_name": "Fred Bloggs"
+      }
+      JSON
+    end
+
+  end
+  
+  context "with naming_strategy :camelcase" do
+
+    it "generates camelCased element and attribute names" do
+      @user = OpenStruct.new(:full_name => "Fred Bloggs")
+      r(:naming_strategy => :camelcase).element :user, @user do
+        r.attribute :alt_url, "http://xyz.com"
+        r.element :full_name
+      end
+      resulting_json.should == undent(<<-JSON)
+      { 
+        "@altUrl": "http://xyz.com",
+        "fullName": "Fred Bloggs"
+      }
+      JSON
+    end
+
   end
 
 end
