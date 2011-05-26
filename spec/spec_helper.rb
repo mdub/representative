@@ -1,10 +1,6 @@
-require 'spec'
+require 'rspec'
 
 require "rubygems"
-
-Spec::Runner.configure do |config|
-  
-end
 
 def undent(raw)
   if raw =~ /\A( +)/

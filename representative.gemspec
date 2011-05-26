@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency("json", ">= 1.4.5")
 
   gem.add_development_dependency("rake", "~> 0.8.7")
-  gem.add_development_dependency("rspec", "~> 1.3.0")
+  gem.add_development_dependency("rspec", "~> 2.5.0")
   gem.add_development_dependency("tilt", ">= 0.9")
   gem.add_development_dependency("nokogiri", "~> 1.4.2")
   gem.add_development_dependency("diff-lcs")
