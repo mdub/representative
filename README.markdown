@@ -34,11 +34,9 @@ Given a Ruby data-structure:
       )
     ]
 
-Representative::Xml can be used to generate XML:
+Representative::Nokogiri can be used to generate XML:
 
-    xml = Builder::XmlMarkup.new(:indent => 2)
-
-    Representative::Xml.new(xml) do |r|
+    xml = Representative::Nokogiri.new do |r|
     
       r.list_of :books, @books do
         r.element :title
@@ -51,7 +49,7 @@ Representative::Xml can be used to generate XML:
       
     end
 
-    puts xml.target!
+    puts xml.to_s
 
 which produces:
 

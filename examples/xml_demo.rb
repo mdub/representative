@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require "rubygems"
-require "representative/xml"
+require "representative/nokogiri"
 require "ostruct"
 
 @books = [
@@ -28,9 +28,7 @@ require "ostruct"
   )
 ]
 
-xml = Builder::XmlMarkup.new(:indent => 2)
-
-Representative::Xml.new(xml) do |r|
+xml = Representative::Nokogiri.new do |r|
 
   r.list_of :books, @books do
     r.element :title
@@ -43,4 +41,4 @@ Representative::Xml.new(xml) do |r|
 
 end
 
-puts xml.target!
+puts xml.to_s
