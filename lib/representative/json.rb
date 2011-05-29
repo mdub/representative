@@ -1,6 +1,6 @@
 require "active_support/core_ext/array"
 require "representative/base"
-require "json"
+require "multi_json"
 
 module Representative
   
@@ -71,7 +71,7 @@ module Representative
             yield current_subject
           end
         else
-          emit(current_subject.to_json)
+          emit(encode(current_subject))
         end
       end
       now_at :end_of_item
@@ -97,6 +97,10 @@ module Representative
       @buffer << s
     end
 
+    def encode(data)
+      MultiJson.encode(data)
+    end
+    
     def indentation
       ("  " * @indent_level)
     end
@@ -104,7 +108,7 @@ module Representative
     def label(name)
       return false if @indent_level == 0
       new_item
-      emit("#{format_name(name).to_json}: ")
+      emit("#{encode(format_name(name))}: ")
     end
 
     def new_item
