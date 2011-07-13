@@ -184,8 +184,8 @@ shared_examples_for "an XML Representative" do
       describe "with a Symbol value argument" do
 
         it "calls the named method to generate a value" do
-          r.list_of(:nicks, :nick_names)
-          resulting_xml.should == %(<nicks type="array"><nick>Freddie</nick><nick>Knucklenose</nick></nicks>)
+          r.list_of(:foo_bars, :nick_names)
+          resulting_xml.should == %(<foo-bars type="array"><foo-bar>Freddie</foo-bar><foo-bar>Knucklenose</foo-bar></foo-bars>)
         end
 
       end
