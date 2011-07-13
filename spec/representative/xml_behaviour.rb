@@ -8,15 +8,15 @@ shared_examples_for "an XML Representative" do
 
     before do
       @subject = OpenStruct.new(
-        :name => "Fred", 
-        :full_name => "Fredrick", 
-        :width => 200, 
+        :name => "Fred",
+        :full_name => "Fredrick",
+        :width => 200,
         :vehicle => OpenStruct.new(:year => "1959", :make => "Chevrolet")
       )
     end
 
     describe "#element" do
-      
+
       it "generates an element with content extracted from the subject" do
         r.element :name
         resulting_xml.should == %(<name>Fred</name>)
@@ -77,7 +77,7 @@ shared_examples_for "an XML Representative" do
 
       end
 
-      describe "with a Symbol argument" do
+      describe "with a Symbol value argument" do
 
         it "calls the named method to generate a value" do
           r.element :name, :width
@@ -103,7 +103,7 @@ shared_examples_for "an XML Representative" do
           end
           resulting_xml.should == %(<info><name>Fred</name></info>)
         end
-        
+
       end
 
       describe "with value argument nil" do
@@ -169,7 +169,7 @@ shared_examples_for "an XML Representative" do
       end
 
     end
-    
+
     describe "#list_of" do
 
       before do
@@ -181,8 +181,22 @@ shared_examples_for "an XML Representative" do
         resulting_xml.should == %(<nick-names type="array"><nick-name>Freddie</nick-name><nick-name>Knucklenose</nick-name></nick-names>)
       end
 
+      describe "with a Symbol value argument" do
+
+        it "calls the named method to generate a value" do
+          r.list_of(:nicks, :nick_names)
+          resulting_xml.should == %(<nicks type="array"><nick>Freddie</nick><nick>Knucklenose</nick></nicks>)
+        end
+
+      end
+
+      it "generates an array element" do
+        r.list_of(:nick_names)
+        resulting_xml.should == %(<nick-names type="array"><nick-name>Freddie</nick-name><nick-name>Knucklenose</nick-name></nick-names>)
+      end
+
       describe "with :list_attributes" do
-        
+
         it "attaches attributes to the array element" do
           r.list_of(:nick_names, :list_attributes => {:color => "blue", :size => :size})
           array_element_attributes = REXML::Document.new(resulting_xml).root.attributes
@@ -191,7 +205,7 @@ shared_examples_for "an XML Representative" do
           array_element_attributes["size"].should == "2"
           array_element_attributes.size.should == 3
         end
-        
+
       end
 
       describe "with :item_attributes" do
@@ -200,7 +214,7 @@ shared_examples_for "an XML Representative" do
           r.list_of(:nick_names, :item_attributes => {:length => :size})
           resulting_xml.should == %(<nick-names type="array"><nick-name length="7">Freddie</nick-name><nick-name length="11">Knucklenose</nick-name></nick-names>)
         end
-        
+
       end
 
       describe "with an explicit :item_name" do
@@ -238,41 +252,41 @@ shared_examples_for "an XML Representative" do
           r.list_of(:nick_names, :item_attributes => {:value => :to_s}, &r.empty)
           resulting_xml.should == %(<nick-names type="array"><nick-name value="Freddie"/><nick-name value="Knucklenose"/></nick-names>)
         end
-        
+
       end
-      
+
       describe "with :item_attributes AND block" do
-        
+
         it "generates attributes and nested elements" do
           r.list_of(:nick_names, :item_attributes => {:length => :size}) do
             r.element :reverse
           end
           resulting_xml.should == %(<nick-names type="array"><nick-name length="7"><reverse>eidderF</reverse></nick-name><nick-name length="11"><reverse>esonelkcunK</reverse></nick-name></nick-names>)
         end
-        
+
       end
 
     end
 
     describe "#representing" do
-    
+
       it "selects a new subject without generating an element" do
         r.representing :vehicle do
           r.element :make
         end
         resulting_xml.should == %(<make>Chevrolet</make>)
       end
-      
+
     end
 
     describe "#comment" do
-      
+
       it "inserts a comment" do
         r.element :vehicle do
           r.comment "Year of manufacture"
           r.element :year
         end
-        resulting_xml.should == 
+        resulting_xml.should ==
         %(<vehicle><!-- Year of manufacture --><year>1959</year></vehicle>)
       end
 
