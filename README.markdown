@@ -11,23 +11,23 @@ Generating XML
 Given a Ruby data-structure:
 
     @books = [
-      OpenStruct.new(
+      Book.new(
         :title => "Sailing for old dogs", 
         :authors => ["Jim Watson"],
-        :published => OpenStruct.new(
+        :published => Publication.new(
           :by => "Credulous Print",
           :year => 1994
         )
       ),
-      OpenStruct.new(
+      Book.new(
         :title => "On the horizon", 
         :authors => ["Zoe Primpton", "Stan Ford"],
-        :published => OpenStruct.new(
+        :published => Publication.new(
           :by => "McGraw-Hill",
           :year => 2005
         )
       ),
-      OpenStruct.new(
+      Book.new(
         :title => "The Little Blue Book of VHS Programming",
         :authors => ["Henry Nelson"],
         :rating => "****"
