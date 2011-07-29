@@ -164,7 +164,7 @@ Representative includes integration with [Tilt](https://github.com/rtomayko/tilt
 
     require "representative/tilt_integration"
 
-This registers handlers for ".xml.rep" and ".json.rep" templates.
+This registers handlers for "`.xml.rep`" and "`.json.rep`" templates.
 
 Copyright
 ---------
@@ -174,11 +174,13 @@ Copyright (c) 2009 Mike Williams. See LICENSE for details.
 Similar projects
 ----------------
 
-There are a number of alternatives to Representative for generating JSON and/or XML representations, including:
+If Representative is not your cup of tea, you may prefer:
 
 * [Tokamak](https://github.com/abril/tokamak)
+* [Builder](http://rubygems.org/gems/builder)
 * [JSONify](https://github.com/bsiggelkow/jsonify)
 * [Argonaut](https://github.com/jbr/argonaut)
 * [JSON Builder](https://github.com/dewski/json_builder)
 * [RABL](https://github.com/nesquena/rabl)
 
+Just don't go back to using "`this_thing.to_xml`" and "`that_thing.to_json`", m'kay?
