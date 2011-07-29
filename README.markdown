@@ -152,7 +152,33 @@ Representative is packaged as a Gem.  Install with:
 
     gem install representative
 
+Ruby on Rails integration
+-------------------------
+
+A separate gem, [RepresentativeView](https://github.com/mdub/representative_view), integrates Representative as an ActionPack template format.
+
+Tilt integration
+----------------
+
+Representative includes integration with [Tilt](https://github.com/rtomayko/tilt), which can be enabled with:
+
+    require "representative/tilt_integration"
+
+This registers handlers for ".xml.rep" and ".json.rep" templates.
+
 Copyright
 ---------
 
 Copyright (c) 2009 Mike Williams. See LICENSE for details.
+
+Similar projects
+----------------
+
+There are a number of alternatives to Representative for generating JSON and/or XML representations, including:
+
+* [Tokamak](https://github.com/abril/tokamak)
+* [JSONify](https://github.com/bsiggelkow/jsonify)
+* [Argonaut](https://github.com/jbr/argonaut)
+* [JSON Builder](https://github.com/dewski/json_builder)
+* [RABL](https://github.com/nesquena/rabl)
+
