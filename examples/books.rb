@@ -1,12 +1,10 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+#! /usr/bin/env ruby
 
-require "rubygems"
-require "representative/json"
 require "ostruct"
 
 @books = [
   OpenStruct.new(
-    :title => "Sailing for old dogs", 
+    :title => "Sailing for old dogs",
     :authors => ["Jim Watson"],
     :published => OpenStruct.new(
       :by => "Credulous Print",
@@ -14,7 +12,7 @@ require "ostruct"
     )
   ),
   OpenStruct.new(
-    :title => "On the horizon", 
+    :title => "On the horizon",
     :authors => ["Zoe Primpton", "Stan Ford"],
     :published => OpenStruct.new(
       :by => "McGraw-Hill",
@@ -28,8 +26,10 @@ require "ostruct"
   )
 ]
 
-json = Representative::Json.new do |r|
+require "representative/json"
+require "representative/nokogiri"
 
+def represent_books(r)
   r.list_of :books, @books do
     r.element :title
     r.list_of :authors
@@ -38,7 +38,18 @@ json = Representative::Json.new do |r|
       r.element :year
     end
   end
-
 end
 
-puts json.to_s
+puts "\n=== JSON ===\n\n"
+
+Representative::Json.new.tap do |r|
+  represent_books(r)
+  puts r
+end
+
+puts "\n=== XML ===\n\n"
+
+Representative::Nokogiri.new.tap do |r|
+  represent_books(r)
+  puts r
+end
