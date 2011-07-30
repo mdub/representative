@@ -42,14 +42,10 @@ end
 
 puts "\n=== JSON ===\n\n"
 
-Representative::Json.new.tap do |r|
-  represent_books(r)
-  puts r
-end
+json = Representative::Json.new.tap { |r| represent_books(r) }.to_s
+puts json
 
 puts "\n=== XML ===\n\n"
 
-Representative::Nokogiri.new.tap do |r|
-  represent_books(r)
-  puts r
-end
+xml = Representative::Nokogiri.new.tap { |r| represent_books(r) }.to_s
+puts xml
