@@ -11,7 +11,7 @@ require "representative/xml"
 
 @books = [
   OpenStruct.new(
-    :title => "Sailing for old dogs", 
+    :title => "Sailing for old dogs",
     :authors => ["Jim Watson"],
     :published => OpenStruct.new(
       :by => "Credulous Print",
@@ -19,7 +19,7 @@ require "representative/xml"
     )
   ),
   OpenStruct.new(
-    :title => "On the horizon", 
+    :title => "On the horizon",
     :authors => ["Zoe Primpton", "Stan Ford"],
     :published => OpenStruct.new(
       :by => "McGraw-Hill",
@@ -69,7 +69,6 @@ end
 
 def nokogiri
   iterations.times do
-    xml = Builder::XmlMarkup.new(:indent => 2)
     r = Representative::Nokogiri.new
     represent_books_using(r)
     r.to_xml
