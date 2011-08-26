@@ -55,6 +55,7 @@ def bm
     x.report("builder") { builder }
     x.report("nokogiri") { nokogiri }
     x.report("json") { json }
+    x.report("to_json") { use_to_json }
   end
 end
 
@@ -80,6 +81,24 @@ def json
     r = Representative::Json.new
     represent_books_using(r)
     r.to_json
+  end
+end
+
+def use_to_json
+  iterations.times do
+    book_data = @books.map do |book|
+      {
+        :title => book.title,
+        :authors => book.authors,
+        :published => if book.published
+          {
+            :by => book.published.by,
+            :year => book.published.year
+          }
+        end
+      }
+    end
+    book_data.to_json
   end
 end
 
