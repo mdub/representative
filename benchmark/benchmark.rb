@@ -52,55 +52,51 @@ end
 
 def bm
   Benchmark.bm(12) do |x|
-    x.report("builder") { builder }
-    x.report("nokogiri") { nokogiri }
-    x.report("json") { json }
-    x.report("to_json") { use_to_json }
+    %w(rep_xml rep_nokogiri rep_json use_to_json).each do |method|
+      x.report(method) do
+        iterations.times do
+          send(method)
+        end
+      end
+    end
   end
+  nil
 end
 
-def builder
-  iterations.times do
-    xml = Builder::XmlMarkup.new(:indent => 2)
-    r = Representative::Xml.new(xml)
-    represent_books_using(r)
-    xml.target!
-  end
+def rep_xml
+  xml = Builder::XmlMarkup.new(:indent => 2)
+  r = Representative::Xml.new(xml)
+  represent_books_using(r)
+  xml.target!
 end
 
-def nokogiri
-  iterations.times do
-    r = Representative::Nokogiri.new
-    represent_books_using(r)
-    r.to_xml
-  end
+def rep_nokogiri
+  r = Representative::Nokogiri.new
+  represent_books_using(r)
+  r.to_xml
 end
 
-def json
-  iterations.times do
-    r = Representative::Json.new
-    represent_books_using(r)
-    r.to_json
-  end
+def rep_json
+  r = Representative::Json.new
+  represent_books_using(r)
+  r.to_json
 end
 
 def use_to_json
-  iterations.times do
-    book_data = @books.map do |book|
-      {
-        :title => book.title,
-        :authors => book.authors,
-        :published => if book.published
-          {
-            :by => book.published.by,
-            :year => book.published.year
-          }
-        end
-      }
-    end
-    book_data.to_json
+  book_data = @books.map do |book|
+    {
+      :title => book.title,
+      :authors => book.authors,
+      :published => if book.published
+        {
+          :by => book.published.by,
+          :year => book.published.year
+        }
+      end
+    }
   end
+  book_data.to_json
 end
 
 action = ARGV.first || "bm"
-self.send(action)
+puts self.send(action)
