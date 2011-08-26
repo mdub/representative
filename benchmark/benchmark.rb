@@ -98,5 +98,13 @@ def use_to_json
   book_data.to_json
 end
 
-action = ARGV.first || "bm"
-puts self.send(action)
+action = ARGV.first
+if action
+  result = nil
+  iterations.times do
+    result = send(action)
+  end
+  puts result
+else
+  bm
+end
