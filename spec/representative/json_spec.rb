@@ -213,9 +213,39 @@ describe Representative::Json do
       end
       
       describe "with list attributes" do
-        it "raises an ArgumentError" do
-          @authors = []
-          lambda{ r.list_of(:authors, @authors, :list_attributes => {}) {} }.should raise_exception(ArgumentError)
+        it "creates an attributes item" do
+          @authors = [
+            OpenStruct.new(:name => "Hewey", :age => 3),
+            OpenStruct.new(:name => "Dewey", :age => 4),
+            OpenStruct.new(:name => "Louie", :age => 5)
+          ]
+          r.list_of :authors, @authors, :list_attributes => {:page => 1, :pages => 5, :items_page => 5} do
+            r.element :name
+            r.element :age
+          end
+          resulting_json.should == undent(<<-JSON)
+          [
+            {
+              "attributes": {
+                "page": 1,
+                "pages": 5,
+                "items_page": 5
+              }
+            },
+            {
+              "name": "Hewey",
+              "age": 3
+            },
+            {
+              "name": "Dewey",
+              "age": 4
+            },
+            {
+              "name": "Louie",
+              "age": 5
+            }
+          ]
+          JSON
         end
       end
       

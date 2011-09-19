@@ -48,19 +48,32 @@ module Representative
       list_subject = args.empty? ? name : args.shift
       raise ArgumentError, "too many arguments" unless args.empty?
       list_attributes = options[:list_attributes]
-      raise ArgumentError, "list_attributes #{list_attributes} not supported for json representation" if list_attributes
       item_attributes = options[:item_attributes] || {}
-
-      items = resolve_value(list_subject)
       label(name)
       inside "[", "]" do
+        add_list_attributes(list_attributes)
+        items = resolve_value(list_subject)
         items.each do |item|
           new_item
           value(item, item_attributes, &block)
         end
       end
     end
-
+    def add_list_attributes(list_attributes)
+      
+      if list_attributes
+        list_attributes = OpenStruct.new(:attributes => OpenStruct.new(list_attributes))
+        @subjects << list_attributes.attributes
+        new_item
+        inside "{", "}" do
+          element(:attributes, list_attributes) do
+            list_attributes.attributes.marshal_dump.each{ |item, value|
+              element(item, list_attributes.attributes.send(item))
+            }
+          end
+        end
+      end
+    end
     def value(subject, attributes = {})
       representing(subject) do
         if block_given? && !current_subject.nil?
