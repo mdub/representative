@@ -50,6 +50,7 @@ class RepresentativeBenchmark < Clamp::Command
   subcommand "bm", "Benchmark" do
 
     option ["-n", "--iterations"], "N", "number of iterations", :default => 1000, &method(:Integer)
+    option ["--profile"], :flag, "profile execution"
 
     parameter "[STRATEGY] ...", "representation strategies\n(default: #{ALL_STRATEGIES.join(", ")})", :attribute_name => "strategies" do |strategies|
       strategies.each { |strategy| RepresentativeBenchmark.validate_strategy(strategy) }
@@ -57,6 +58,7 @@ class RepresentativeBenchmark < Clamp::Command
 
     def execute
       self.strategies = ALL_STRATEGIES if strategies.empty?
+      require "unprof" if profile?
       Benchmark.bm(12) do |x|
         strategies.each do |strategy|
           x.report(strategy) do
