@@ -1,6 +1,6 @@
 require "active_support/core_ext/array"
+require "active_support/json"
 require "representative/base"
-require "multi_json"
 
 module Representative
 
@@ -98,7 +98,7 @@ module Representative
     end
 
     def encode(data)
-      MultiJson.encode(data)
+      ActiveSupport::JSON.encode(data)
     end
 
     def indentation
