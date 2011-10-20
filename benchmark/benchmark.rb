@@ -1,7 +1,10 @@
+#! /usr/bin/env ruby
+
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require "rubygems"
 
+require "clamp"
 require "benchmark"
 require "ostruct"
 
@@ -9,102 +12,126 @@ require "representative/json"
 require "representative/nokogiri"
 require "representative/xml"
 
-@books = [
+$books = [
   OpenStruct.new(
-    :title => "Sailing for old dogs",
-    :authors => ["Jim Watson"],
-    :published => OpenStruct.new(
-      :by => "Credulous Print",
-      :year => 1994
-    )
+  :title => "Sailing for old dogs",
+  :authors => ["Jim Watson"],
+  :published => OpenStruct.new(
+  :by => "Credulous Print",
+  :year => 1994
+  )
   ),
   OpenStruct.new(
-    :title => "On the horizon",
-    :authors => ["Zoe Primpton", "Stan Ford"],
-    :published => OpenStruct.new(
-      :by => "McGraw-Hill",
-      :year => 2005
-    )
+  :title => "On the horizon",
+  :authors => ["Zoe Primpton", "Stan Ford"],
+  :published => OpenStruct.new(
+  :by => "McGraw-Hill",
+  :year => 2005
+  )
   ),
   OpenStruct.new(
-    :title => "The Little Blue Book of VHS Programming",
-    :authors => ["Henry Nelson"],
-    :rating => "****"
+  :title => "The Little Blue Book of VHS Programming",
+  :authors => ["Henry Nelson"],
+  :rating => "****"
   )
 ]
 
-def represent_books_using(r)
+class RepresentativeBenchmark < Clamp::Command
 
-  r.list_of :books, @books do
-    r.element :title
-    r.list_of :authors
-    r.element :published do
-      r.element :by
-      r.element :year
+  ALL_STRATEGIES = %w(builder nokogiri json to_json)
+
+  def self.validate_strategy(strategy)
+    unless ALL_STRATEGIES.member?(strategy)
+      raise ArgumentError, "invalid strategy: #{strategy}"
     end
+    strategy
   end
 
-end
+  subcommand "bm", "Benchmark" do
 
-def iterations
-  1000
-end
+    option ["-n", "--iterations"], "N", "number of iterations", :default => 1000, &method(:Integer)
 
-def bm
-  Benchmark.bm(12) do |x|
-    %w(rep_xml rep_nokogiri rep_json use_to_json).each do |method|
-      x.report(method) do
-        iterations.times do
-          send(method)
+    parameter "[STRATEGY] ...", "representation strategies\n(default: #{ALL_STRATEGIES.join(", ")})", :attribute_name => "strategies" do |strategies|
+      strategies.each { |strategy| RepresentativeBenchmark.validate_strategy(strategy) }
+    end
+
+    def execute
+      self.strategies = ALL_STRATEGIES if strategies.empty?
+      Benchmark.bm(12) do |x|
+        strategies.each do |strategy|
+          x.report(strategy) do
+            iterations.times do
+              send("with_#{strategy}")
+            end
+          end
         end
       end
     end
+
   end
-  nil
-end
 
-def rep_xml
-  xml = Builder::XmlMarkup.new(:indent => 2)
-  r = Representative::Xml.new(xml)
-  represent_books_using(r)
-  xml.target!
-end
+  subcommand ["print", "p"], "Show output of a specified strategy" do
 
-def rep_nokogiri
-  r = Representative::Nokogiri.new
-  represent_books_using(r)
-  r.to_xml
-end
+    parameter "STRATEGY", "one of: #{ALL_STRATEGIES.join(", ")}" do |strategy|
+      RepresentativeBenchmark.validate_strategy(strategy)
+    end
 
-def rep_json
-  r = Representative::Json.new
-  represent_books_using(r)
-  r.to_json
-end
+    def execute
+      puts send("with_#{strategy}")
+    end
 
-def use_to_json
-  book_data = @books.map do |book|
-    {
-      :title => book.title,
-      :authors => book.authors,
-      :published => if book.published
-        {
-          :by => book.published.by,
-          :year => book.published.year
-        }
+  end
+
+  private
+
+  def represent_books_using(r)
+
+    r.list_of :books, $books do
+      r.element :title
+      r.list_of :authors
+      r.element :published do
+        r.element :by
+        r.element :year
       end
-    }
+    end
+
   end
-  book_data.to_json
+
+  def with_builder
+    xml = Builder::XmlMarkup.new(:indent => 2)
+    r = Representative::Xml.new(xml)
+    represent_books_using(r)
+    xml.target!
+  end
+
+  def with_nokogiri
+    r = Representative::Nokogiri.new
+    represent_books_using(r)
+    r.to_xml
+  end
+
+  def with_json
+    r = Representative::Json.new
+    represent_books_using(r)
+    r.to_json
+  end
+
+  def with_to_json
+    book_data = $books.map do |book|
+      {
+        :title => book.title,
+        :authors => book.authors,
+        :published => if book.published
+          {
+            :by => book.published.by,
+            :year => book.published.year
+          }
+        end
+      }
+    end
+    book_data.to_json
+  end
+
 end
 
-action = ARGV.first
-if action
-  result = nil
-  iterations.times do
-    result = send(action)
-  end
-  puts result
-else
-  bm
-end
+RepresentativeBenchmark.run
