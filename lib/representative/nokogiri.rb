@@ -12,6 +12,7 @@ module Representative
     def initialize(subject = nil, options = {})
       super(subject, options)
       @doc = ::Nokogiri::XML::Document.new
+      @doc.encoding = 'utf-8'
       @current_element = @doc
       yield self if block_given?
     end
