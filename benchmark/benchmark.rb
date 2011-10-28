@@ -58,18 +58,32 @@ class RepresentativeBenchmark < Clamp::Command
 
     def execute
       self.strategies = ALL_STRATEGIES if strategies.empty?
-      require "unprof" if profile?
-      Benchmark.bm(12) do |x|
-        strategies.each do |strategy|
-          x.report(strategy) do
-            iterations.times do
-              send("with_#{strategy}")
+      with_profiling do
+        Benchmark.bm(12) do |x|
+          strategies.each do |strategy|
+            x.report(strategy) do
+              iterations.times do
+                send("with_#{strategy}")
+              end
             end
           end
         end
       end
     end
 
+  end
+
+  def with_profiling
+    if profile?
+      require 'ruby-prof'
+      result = RubyProf.profile do
+        yield
+      end
+      printer = RubyProf::FlatPrinter.new(result)
+      printer.print(STDOUT)
+    else
+      yield
+    end
   end
 
   subcommand ["print", "p"], "Show output of a specified strategy" do
