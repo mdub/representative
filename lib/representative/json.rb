@@ -10,7 +10,7 @@ module Representative
 
     def initialize(subject = nil, options = {})
       super(subject, options)
-      @buffer = ""
+      @buffer = []
       @indent_level = 0
       @attribute_prefix = options[:attribute_prefix] || DEFAULT_ATTRIBUTE_PREFIX
       now_at :beginning_of_buffer
@@ -84,7 +84,8 @@ module Representative
     end
 
     def to_json
-      @buffer + "\n"
+      @buffer << "\n"
+      @buffer.join
     end
 
     def to_s
