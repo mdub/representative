@@ -50,7 +50,8 @@ class RepresentativeBenchmark < Clamp::Command
   subcommand "bm", "Benchmark" do
 
     option ["-n", "--iterations"], "N", "number of iterations", :default => 1000, &method(:Integer)
-    option ["--profile"], :flag, "profile execution"
+    option ["--profile"], :flag, "profile output type"
+    option ["--profile-format"], "FORMAT", "'flat' or 'graph'", :default => "flat"
 
     parameter "[STRATEGY] ...", "representation strategies\n(default: #{ALL_STRATEGIES.join(", ")})", :attribute_name => "strategies" do |strategies|
       strategies.each { |strategy| RepresentativeBenchmark.validate_strategy(strategy) }
@@ -79,8 +80,8 @@ class RepresentativeBenchmark < Clamp::Command
       result = RubyProf.profile do
         yield
       end
-      printer = RubyProf::FlatPrinter.new(result)
-      printer.print(STDOUT)
+      printer_class = RubyProf.const_get("#{profile_format.capitalize}Printer")
+      printer_class.new(result).print(STDOUT)
     else
       yield
     end
