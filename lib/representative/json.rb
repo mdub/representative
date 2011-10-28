@@ -25,9 +25,7 @@ module Representative
       attributes = args.extract_options!.merge(metadata)
 
       subject_of_element = if args.empty?
-        lambda do |subject|
-          @inspector.get_value(current_subject, name)
-        end
+        @inspector.get_value(current_subject, name)
       else
         args.shift
       end

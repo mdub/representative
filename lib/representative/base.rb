@@ -1,18 +1,18 @@
 require "representative/object_inspector"
 
 module Representative
-  
+
   class Base
-    
+
     def initialize(subject = nil, options = {})
       @subjects = [subject]
       @inspector = options[:inspector] || ObjectInspector.new
       @naming_strategy = options[:naming_strategy] || :plain
     end
 
-    # Return the current "subject" of representation.  
+    # Return the current "subject" of representation.
     #
-    # This object will provide element values where they haven't been 
+    # This object will provide element values where they haven't been
     # explicitly provided.
     #
     def current_subject
@@ -20,14 +20,14 @@ module Representative
     end
 
     alias :subject :current_subject
-    
+
     # Evaluate a block with a specified object as #subject.
     #
     def representing(new_subject, &block)
       with_subject(resolve_value(new_subject), &block)
     end
 
-    protected 
+    protected
 
     def with_subject(subject)
       @subjects.push(subject)
@@ -49,7 +49,7 @@ module Representative
         value_generator
       end
     end
-    
+
     def format_name(name)
       name = name.to_s
       case @naming_strategy
@@ -63,7 +63,7 @@ module Representative
         @naming_strategy.to_proc.call(name)
       end
     end
-    
+
   end
-  
+
 end
