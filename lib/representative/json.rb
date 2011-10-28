@@ -109,7 +109,7 @@ module Representative
     def label(name)
       return false if @indent_level == 0
       new_item
-      emit(encode(format_name(name)) + ": ")
+      emit(format_name(name).inspect + ": ")
     end
 
     def new_item
