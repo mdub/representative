@@ -1,7 +1,7 @@
 require "representative/base"
 
 module Representative
-  
+
   class AbstractXml < Base
 
     def initialize(subject = nil, options = {})
@@ -14,11 +14,11 @@ module Representative
     # Generate an element.
     #
     # With two arguments, it generates an element with the specified text content.
-    # 
+    #
     #   r.element :size, 42
     #   # => <size>42</size>
     #
-    # More commonly, though, the second argument is omitted, in which case the 
+    # More commonly, though, the second argument is omitted, in which case the
     # element content is assumed to be the named property of the current #subject.
     #
     #   r.representing my_shoe do
@@ -46,11 +46,9 @@ module Representative
       metadata = @inspector.get_metadata(current_subject, name)
       attributes = args.extract_options!.merge(metadata)
 
-      subject_of_element = if args.empty? 
-        lambda do |subject|
-          @inspector.get_value(current_subject, name)
-        end
-      else 
+      subject_of_element = if args.empty?
+        @inspector.get_value(current_subject, name)
+      else
         args.shift
       end
 
@@ -60,7 +58,7 @@ module Representative
 
         resolved_attributes = resolve_attributes(attributes)
         content_string = content_block = nil
-        
+
         unless current_subject.nil?
           if block
             unless block == Representative::EMPTY
@@ -70,7 +68,7 @@ module Representative
             content_string = current_subject.to_s
           end
         end
-      
+
         generate_element(format_name(name), resolved_attributes, content_string, &content_block)
 
       end
@@ -131,8 +129,8 @@ module Representative
         end
       end
     end
-        
+
   end
-  
+
 end
-    
+
