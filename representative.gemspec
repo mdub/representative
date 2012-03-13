@@ -16,11 +16,6 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency("builder", ">= 2.1.2")
   gem.add_runtime_dependency("nokogiri", ">= 1.4.2")
 
-  gem.add_development_dependency("rake", "~> 0.8.7")
-  gem.add_development_dependency("rspec", "~> 2.5.0")
-  gem.add_development_dependency("tilt", ">= 0.9")
-  gem.add_development_dependency("diff-lcs")
-
   gem.require_path = "lib"
   gem.files = Dir["lib/**/*", "examples/**/*", "README.markdown", "LICENSE"]
   gem.test_files = Dir["spec/**/*", "Rakefile"]
