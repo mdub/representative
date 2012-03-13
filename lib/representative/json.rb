@@ -7,12 +7,14 @@ module Representative
   class Json < Base
 
     DEFAULT_ATTRIBUTE_PREFIX = "@".freeze
+    DEFAULT_INDENTATION = "  " # two spaces
 
     def initialize(subject = nil, options = {})
       super(subject, options)
       @buffer = []
       @indent_level = 0
-      @attribute_prefix = options[:attribute_prefix] || DEFAULT_ATTRIBUTE_PREFIX
+      @attribute_prefix = options.fetch(:attribute_prefix, DEFAULT_ATTRIBUTE_PREFIX)
+      @indentation = options.fetch(:indentation, DEFAULT_INDENTATION)
       now_at :beginning_of_buffer
       yield self if block_given?
     end
@@ -82,7 +84,7 @@ module Representative
     end
 
     def to_json
-      @buffer << "\n"
+      emit("\n") if indenting?
       @buffer.join
     end
 
@@ -100,20 +102,27 @@ module Representative
       ActiveSupport::JSON.encode(data)
     end
 
-    def indentation
-      ("  " * @indent_level)
+    def indenting?
+      !!@indentation
+    end
+
+    def current_indentation
+      (@indentation * @indent_level)
     end
 
     def label(name)
       return false if @indent_level == 0
       new_item
-      emit(format_name(name).inspect + ": ")
+      emit(format_name(name).inspect + ":")
+      emit(" ") if indenting?
     end
 
     def new_item
       emit(",") if at? :end_of_item
-      emit("\n") unless at? :beginning_of_buffer
-      emit(indentation)
+      if indenting?
+        emit("\n") unless at? :beginning_of_buffer
+        emit(current_indentation)
+      end
       @pending_comma = ","
     end
 
@@ -123,7 +132,9 @@ module Representative
       now_at :beginning_of_block
       yield
       @indent_level -= 1
-      emit("\n" + indentation) unless at? :beginning_of_block
+      if indenting?
+        emit("\n" + current_indentation) unless at? :beginning_of_block
+      end
       emit(closing_char)
       now_at :end_of_item
     end
