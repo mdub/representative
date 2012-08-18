@@ -352,4 +352,53 @@ describe Representative::Json do
 
   end
 
+  context "indentation" do
+    before(:each) do
+      @authors = [
+          OpenStruct.new(:name => "Hewey", :age => 3),
+          OpenStruct.new(:name => "Dewey", :age => 4),
+          OpenStruct.new(:name => "Louie", :age => 5)
+      ]
+      r(:indentation => indentation).list_of :authors, @authors, :item_attributes => {:about => lambda { |obj| "#{obj.name} is #{obj.age} years old" }} do
+        r.element :name
+        r.element :age
+      end
+    end
+
+    describe "arbitrary indentation" do
+      let(:indentation) { 4 }
+      it "should output correctly indented JSON with the number of spaces provided in options" do
+        resulting_json.should == undent(<<-JSON)
+            [
+                {
+                    "@about": "Hewey is 3 years old",
+                    "name": "Hewey",
+                    "age": 3
+                },
+                {
+                    "@about": "Dewey is 4 years old",
+                    "name": "Dewey",
+                    "age": 4
+                },
+                {
+                    "@about": "Louie is 5 years old",
+                    "name": "Louie",
+                    "age": 5
+                }
+            ]
+        JSON
+
+      end
+    end
+
+    describe "no indentation" do
+      let(:indentation) { 0 }
+      it "should output JSON without intentation" do
+        resulting_json.should == %q([{"@about":"Hewey is 3 years old","name":"Hewey","age":3},{"@about":"Dewey is 4 years old","name":"Dewey","age":4},{"@about":"Louie is 5 years old","name":"Louie","age":5}])
+      end
+    end
+
+  end
+
+
 end
