@@ -7,14 +7,14 @@ module Representative
   class Json < Base
 
     DEFAULT_ATTRIBUTE_PREFIX = "@".freeze
-    DEFAULT_INDENTATION = "  " # two spaces
+    DEFAULT_INDENTATION = 2 # two spaces
 
     def initialize(subject = nil, options = {})
       super(subject, options)
       @buffer = []
       @indent_level = 0
+      @indent_string = resolve_indentation(options.fetch(:indentation, DEFAULT_INDENTATION))
       @attribute_prefix = options.fetch(:attribute_prefix, DEFAULT_ATTRIBUTE_PREFIX)
-      @indentation = options.fetch(:indentation, DEFAULT_INDENTATION)
       now_at :beginning_of_buffer
       yield self if block_given?
     end
@@ -94,6 +94,19 @@ module Representative
 
     private
 
+    def resolve_indentation(arg)
+      case arg
+      when Integer
+        " " * arg
+      when /\A[ \t]*\Z/
+        arg
+      when nil, false
+        false
+      else
+        raise ArgumentError, "invalid indentation setting"
+      end
+    end
+
     def emit(s)
       @buffer << s
     end
@@ -103,11 +116,11 @@ module Representative
     end
 
     def indenting?
-      !!@indentation
+      !!@indent_string
     end
 
     def current_indentation
-      (@indentation * @indent_level)
+      (@indent_string * @indent_level)
     end
 
     def label(name)

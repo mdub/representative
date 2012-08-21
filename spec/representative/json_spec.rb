@@ -352,18 +352,71 @@ describe Representative::Json do
 
   end
 
-  context "with indentation false" do
+  context "with :indentation option" do
 
-    it "does not indent, or wrap" do
+    before do
       @authors = [
         OpenStruct.new(:name => "Hewey", :age => 3),
         OpenStruct.new(:name => "Dewey", :age => 4)
       ]
-      r(:indentation => false).list_of :authors, @authors do
-        r.element :name
-        r.element :age
+    end
+
+    context "set to an integer" do
+
+      it "indents the specified number of spaces" do
+        r(:indentation => 3).list_of :authors, @authors do
+          r.element :name
+          r.element :age
+        end
+        resulting_json.should == undent(<<-JSON)
+        [
+           {
+              "name": "Hewey",
+              "age": 3
+           },
+           {
+              "name": "Dewey",
+              "age": 4
+           }
+        ]
+        JSON
       end
-      resulting_json.should == %([{"name":"Hewey","age":3},{"name":"Dewey","age":4}])
+
+    end
+
+    context "set to a whitespace String" do
+
+      it "indents the specified number of spaces" do
+        r(:indentation => "\t").list_of :authors, @authors do
+          r.element :name
+          r.element :age
+        end
+        resulting_json.should == undent(<<-JSON)
+        [
+        \t{
+        \t\t"name": "Hewey",
+        \t\t"age": 3
+        \t},
+        \t{
+        \t\t"name": "Dewey",
+        \t\t"age": 4
+        \t}
+        ]
+        JSON
+      end
+
+    end
+
+    context "set false" do
+
+      it "does not indent, or wrap" do
+        r(:indentation => false).list_of :authors, @authors do
+          r.element :name
+          r.element :age
+        end
+        resulting_json.should == %([{"name":"Hewey","age":3},{"name":"Dewey","age":4}])
+      end
+
     end
 
   end
