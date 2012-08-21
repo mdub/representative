@@ -8,6 +8,8 @@ require "clamp"
 require "benchmark"
 require "ostruct"
 
+require "jbuilder"
+
 require "representative/json"
 require "representative/nokogiri"
 require "representative/xml"
@@ -38,7 +40,7 @@ $books = [
 
 class RepresentativeBenchmark < Clamp::Command
 
-  ALL_STRATEGIES = %w(builder nokogiri json to_json)
+  ALL_STRATEGIES = %w(builder nokogiri json to_json jbuilder)
 
   def self.validate_strategy(strategy)
     unless ALL_STRATEGIES.member?(strategy)
@@ -128,7 +130,7 @@ class RepresentativeBenchmark < Clamp::Command
   end
 
   def with_json
-    r = Representative::Json.new
+    r = Representative::Json.new(nil, :indentation => false)
     represent_books_using(r)
     r.to_json
   end
@@ -147,6 +149,23 @@ class RepresentativeBenchmark < Clamp::Command
       }
     end
     book_data.to_json
+  end
+
+  def with_jbuilder
+    Jbuilder.encode do |json|
+      json.array!($books) do |json, book|
+        json.title(book.title)
+        json.authors(book.authors)
+        if book.published
+          json.published do |json|
+            json.by(book.published.by)
+            json.year(book.published.year)
+          end
+        else
+          json.published(nil)
+        end
+      end
+    end
   end
 
 end
