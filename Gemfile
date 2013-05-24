@@ -1,9 +1,9 @@
-source :rubygems
+source "https://rubygems.org"
 
 gemspec
 
-gem "rake", ">= 0.8.7"
-gem "rspec", "~> 2.5.0"
+gem "rake", ">= 10.0.4"
+gem "rspec", "~> 2.13.0"
 gem "tilt"
 gem "diff-lcs"
 gem "ruby-prof"
