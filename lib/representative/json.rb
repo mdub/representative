@@ -1,4 +1,5 @@
 require "activesupport/json_encoder"
+require "active_support/core_ext/array/extract_options"
 require "representative/base"
 
 module Representative
