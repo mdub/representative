@@ -1,6 +1,8 @@
 Representative
 ==============
 
+[![Build Status](https://travis-ci.org/mdub/representative.svg?branch=master)](https://travis-ci.org/mdub/representative)
+
 "Representative" makes it easier to create XML or JSON representations of your Ruby objects.
 
 It works best when you want the output to roughly follow the object structure, but still want complete control of the result.
