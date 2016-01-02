@@ -13,6 +13,8 @@ Gem::Specification.new do |gem|
 
   gem.version = Representative::VERSION.dup
   gem.platform = Gem::Platform::RUBY
+
+  gem.add_development_dependency("rspec", "~> 2.13.0")
   gem.add_runtime_dependency("activesupport-json_encoder", ">= 1.1.0")
   gem.add_runtime_dependency("i18n", ">= 0.4.1")
   gem.add_runtime_dependency("builder", ">= 2.1.2")
