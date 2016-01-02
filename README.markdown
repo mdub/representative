@@ -12,7 +12,7 @@ Given a Ruby data-structure:
 
     @books = [
       Book.new(
-        :title => "Sailing for old dogs", 
+        :title => "Sailing for old dogs",
         :authors => ["Jim Watson"],
         :published => Publication.new(
           :by => "Credulous Print",
@@ -20,7 +20,7 @@ Given a Ruby data-structure:
         )
       ),
       Book.new(
-        :title => "On the horizon", 
+        :title => "On the horizon",
         :authors => ["Zoe Primpton", "Stan Ford"],
         :published => Publication.new(
           :by => "McGraw-Hill",
@@ -37,7 +37,7 @@ Given a Ruby data-structure:
 Representative::Nokogiri can be used to generate XML:
 
     xml = Representative::Nokogiri.new do |r|
-    
+
       r.list_of :books, @books do
         r.element :title
         r.list_of :authors
@@ -46,7 +46,7 @@ Representative::Nokogiri can be used to generate XML:
           r.element :year
         end
       end
-      
+
     end
 
     puts xml.to_s
@@ -98,7 +98,7 @@ Generating JSON
 Representative::Json can be used to generate JSON, using exactly the same DSL:
 
     json = Representative::Json.new do |r|
-    
+
       r.list_of :books, @books do
         r.element :title
         r.list_of :authors
@@ -169,7 +169,7 @@ This registers handlers for "`.xml.rep`" and "`.json.rep`" templates.
 Copyright
 ---------
 
-Copyright (c) 2009 Mike Williams. See LICENSE for details.
+Copyright (c) 2009-2016 Mike Williams. See LICENSE for details.
 
 Similar projects
 ----------------
