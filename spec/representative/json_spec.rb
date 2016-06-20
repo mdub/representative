@@ -20,7 +20,7 @@ describe Representative::Json do
 
         it "outputs the value as JSON" do
           r.element :name, "Fred"
-          resulting_json.should == %{"Fred"\n}
+          expect(resulting_json).to eq %{"Fred"\n}
         end
 
       end
@@ -29,7 +29,7 @@ describe Representative::Json do
 
         it "outputs the value as JSON" do
           r.element :age, 36
-          resulting_json.should == "36\n"
+          expect(resulting_json).to eq "36\n"
         end
 
       end
@@ -38,7 +38,7 @@ describe Representative::Json do
 
         it "generates null" do
           r.element :flavour, nil
-          resulting_json.should == "null\n"
+          expect(resulting_json).to eq "null\n"
         end
 
         describe "and a block" do
@@ -47,7 +47,7 @@ describe Representative::Json do
             r.element :book, nil do
               r.element :author
             end
-            resulting_json.should == "null\n"
+            expect(resulting_json).to eq "null\n"
           end
 
         end
@@ -63,7 +63,7 @@ describe Representative::Json do
             r.element :book, @book, :lang => :lang do
               r.element :title
             end
-            resulting_json.should == undent(<<-JSON)
+            expect(resulting_json).to eq undent(<<-JSON)
             {
               "@lang": "fr",
               "title": "En Edge"
@@ -77,7 +77,7 @@ describe Representative::Json do
 
           it "ignores the attributes" do
             r.element :review, "Blah de blah", :lang => "fr"
-            resulting_json.should == undent(<<-JSON)
+            expect(resulting_json).to eq undent(<<-JSON)
             "Blah de blah"
             JSON
           end
@@ -93,7 +93,7 @@ describe Representative::Json do
           r.representing(@author) do
             r.element :name
           end
-          resulting_json.should == %{"Fred"\n}
+          expect(resulting_json).to eq %{"Fred"\n}
         end
 
       end
@@ -103,7 +103,7 @@ describe Representative::Json do
         it "outputs an object" do
           r.element :something, Object.new do
           end
-          resulting_json.should == "{}\n"
+          expect(resulting_json).to eq "{}\n"
         end
 
       end
@@ -116,7 +116,7 @@ describe Representative::Json do
 
         it "outputs the array as JSON" do
           r.list_of :names, %w(Hewey Dewey Louie)
-          resulting_json.should == undent(<<-JSON)
+          expect(resulting_json).to eq undent(<<-JSON)
           [
             "Hewey",
             "Dewey",
@@ -134,7 +134,7 @@ describe Representative::Json do
           r.element(:duck, @donald) do
             r.list_of :nephews
           end
-          resulting_json.should == undent(<<-JSON)
+          expect(resulting_json).to eq undent(<<-JSON)
           {
             "nephews": [
               "Hewey",
@@ -159,7 +159,7 @@ describe Representative::Json do
             r.element :name
             r.element :age
           end
-          resulting_json.should == undent(<<-JSON)
+          expect(resulting_json).to eq undent(<<-JSON)
           [
             {
               "name": "Hewey",
@@ -190,7 +190,7 @@ describe Representative::Json do
             r.element :name
             r.element :age
           end
-          resulting_json.should == undent(<<-JSON)
+          expect(resulting_json).to eq undent(<<-JSON)
           [
             {
               "@about": "Hewey is 3 years old",
@@ -215,16 +215,18 @@ describe Representative::Json do
       describe "with list attributes" do
         it "raises an ArgumentError" do
           @authors = []
-          lambda{ r.list_of(:authors, @authors, :list_attributes => {}) {} }.should raise_exception(ArgumentError)
+          expect(-> {
+            r.list_of(:authors, @authors, :list_attributes => {}) {}
+          }).to raise_exception(ArgumentError)
         end
       end
 
       describe "with unnecessary arguments" do
         it "raises an ArgumentError" do
           @authors = []
-          lambda{
+          expect(-> {
             r.list_of(:authors, @authors, :unecessary_arg_should_cause_failure, :item_attributes => {}){}
-          }.should raise_exception(ArgumentError)
+          }).to raise_exception(ArgumentError)
         end
       end
 
@@ -234,7 +236,7 @@ describe Representative::Json do
 
       it "inserts a comment" do
         r.comment "now pay attention"
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         // now pay attention
         JSON
       end
@@ -252,7 +254,7 @@ describe Representative::Json do
           r.element :name, "Fred"
           r.element :age, 36
         end
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         {
           "name": "Fred",
           "age": 36
@@ -268,7 +270,7 @@ describe Representative::Json do
             r.element :name
             r.element :age
           end
-          resulting_json.should == undent(<<-JSON)
+          expect(resulting_json).to eq undent(<<-JSON)
           {
             "name": "Fred",
             "age": 36
@@ -287,7 +289,7 @@ describe Representative::Json do
           r.attribute :href, "http://example.com/authors/1"
           r.element :name, "Fred"
         end
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         {
           "@href": "http://example.com/authors/1",
           "name": "Fred"
@@ -306,7 +308,7 @@ describe Representative::Json do
           r.comment "age is irrelevant"
           r.element :age
         end
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         {
           "name": "Fred",
           // age is irrelevant
@@ -325,7 +327,7 @@ describe Representative::Json do
       r.element :user, Object.new do
         r.element :full_name, "Fred Bloggs"
       end
-      resulting_json.should == undent(<<-JSON)
+      expect(resulting_json).to eq undent(<<-JSON)
       {
         "full_name": "Fred Bloggs"
       }
@@ -342,7 +344,7 @@ describe Representative::Json do
         r.attribute :alt_url, "http://xyz.com"
         r.element :full_name
       end
-      resulting_json.should == undent(<<-JSON)
+      expect(resulting_json).to eq undent(<<-JSON)
       {
         "@altUrl": "http://xyz.com",
         "fullName": "Fred Bloggs"
@@ -368,7 +370,7 @@ describe Representative::Json do
           r.element :name
           r.element :age
         end
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         [
            {
               "name": "Hewey",
@@ -391,7 +393,7 @@ describe Representative::Json do
           r.element :name
           r.element :age
         end
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
         [
         \t{
         \t\t"name": "Hewey",
@@ -414,7 +416,7 @@ describe Representative::Json do
           r.element :name
           r.element :age
         end
-        resulting_json.should == %([{"name":"Hewey","age":3},{"name":"Dewey","age":4}])
+        expect(resulting_json).to eq %([{"name":"Hewey","age":3},{"name":"Dewey","age":4}])
       end
 
     end

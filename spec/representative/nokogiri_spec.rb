@@ -29,7 +29,7 @@ describe Representative::Nokogiri do
           r.element :person, @subject do
             r.attribute :name
           end
-          resulting_xml.should == %(<person name="Fred"/>)
+          expect(resulting_xml).to eq %(<person name="Fred"/>)
         end
       end
 
@@ -38,16 +38,16 @@ describe Representative::Nokogiri do
           r.element :person, @subject do
             r.attribute :lang, "fr"
           end
-          resulting_xml.should == %(<person lang="fr"/>)
+          expect(resulting_xml).to eq %(<person lang="fr"/>)
         end
       end
 
       describe "with a value that supports #to_proc" do
         it "calls the Proc on the subject to generate attribute value" do
           r.element :person, @subject do
-            r.attribute :name, lambda { |person| person.name.reverse } 
+            r.attribute :name, lambda { |person| person.name.reverse }
           end
-          resulting_xml.should == %(<person name="derF"/>)
+          expect(resulting_xml).to eq %(<person name="derF"/>)
         end
       end
 
@@ -55,7 +55,7 @@ describe Representative::Nokogiri do
         r.element :name do
           r.attribute :sourced_from, "phonebook"
         end
-        resulting_xml.should == %(<name sourced-from="phonebook"/>)
+        expect(resulting_xml).to eq %(<name sourced-from="phonebook"/>)
       end
 
       describe "with value nil" do
@@ -63,7 +63,7 @@ describe Representative::Nokogiri do
           r.element :person, @subject do
             r.attribute :name, nil
           end
-          resulting_xml.should == %(<person/>)
+          expect(resulting_xml).to eq %(<person/>)
         end
       end
 

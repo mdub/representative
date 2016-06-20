@@ -1,4 +1,4 @@
-require "active_support/core_ext"
+require "active_support/inflector"
 require "builder"
 require "representative/abstract_xml"
 require "representative/empty"
@@ -24,14 +24,14 @@ module Representative
     def comment(text)
       @xml.comment!(text)
     end
-    
+
     protected
-    
+
     def generate_element(name, resolved_attributes, content_string, &content_block)
       tag_args = [content_string, resolved_attributes].compact
       @xml.tag!(name, *tag_args, &content_block)
     end
-    
+
   end
 
 end

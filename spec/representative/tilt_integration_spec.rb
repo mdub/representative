@@ -26,7 +26,7 @@ describe Representative::Tilt do
           r.element :foo, "bar"
         RUBY
         render
-        resulting_xml.should == %{<foo>bar</foo>\n}
+        expect(resulting_xml).to eq %{<foo>bar</foo>\n}
       end
 
       it "provides access to scope" do
@@ -43,7 +43,7 @@ describe Representative::Tilt do
         end
         render(scope)
 
-        resulting_xml.should == undent(<<-XML)
+        expect(resulting_xml).to eq undent(<<-XML)
           <author>
             <name>Mike</name>
           </author>
@@ -61,7 +61,7 @@ describe Representative::Tilt do
 
         render(Object.new, {:author => OpenStruct.new(:name => "Mike")})
 
-        resulting_xml.should == undent(<<-XML)
+        expect(resulting_xml).to eq undent(<<-XML)
           <author>
             <name>Mike</name>
           </author>
@@ -72,7 +72,7 @@ describe Representative::Tilt do
     end
 
   end
-  
+
   describe "JSON template" do
 
     def resulting_json
@@ -86,7 +86,7 @@ describe Representative::Tilt do
         r.element :foo, "bar"
         RUBY
         render
-        resulting_json.should == %{"bar"\n}
+        expect(resulting_json).to eq %{"bar"\n}
       end
 
       it "provides access to scope" do
@@ -103,7 +103,7 @@ describe Representative::Tilt do
         end
         render(scope)
 
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
           {
             "name": "Mike"
           }
@@ -121,7 +121,7 @@ describe Representative::Tilt do
 
         render(Object.new, {:author => OpenStruct.new(:name => "Mike")})
 
-        resulting_json.should == undent(<<-JSON)
+        expect(resulting_json).to eq undent(<<-JSON)
           {
             "name": "Mike"
           }
