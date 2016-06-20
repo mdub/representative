@@ -1,6 +1,7 @@
 Representative
 ==============
 
+[![Gem Version](https://badge.fury.io/rb/representative.png)](http://badge.fury.io/rb/representative)
 [![Build Status](https://travis-ci.org/mdub/representative.svg?branch=master)](https://travis-ci.org/mdub/representative)
 
 "Representative" makes it easier to create XML or JSON representations of your Ruby objects.
