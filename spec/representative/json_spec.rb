@@ -423,4 +423,29 @@ describe Representative::Json do
 
   end
 
+  context "with encoder option" do
+
+    class FakeEncoder
+      def self.encode(data)
+        (data.to_s + "!!!").inspect
+      end
+    end
+
+    before do
+      @authors = [
+        OpenStruct.new(:name => "Hewey", :age => 3),
+        OpenStruct.new(:name => "Dewey", :age => 4)
+      ]
+    end
+
+    it "uses the encoder provided" do
+      r(:indentation => false, :encoder => FakeEncoder).list_of :authors, @authors do
+        r.element :name
+        r.element :age
+      end
+
+      expect(resulting_json).to eq %([{"name":"Hewey!!!","age":"3!!!"},{"name":"Dewey!!!","age":"4!!!"}])
+    end
+  end
+
 end

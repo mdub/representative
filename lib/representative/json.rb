@@ -15,6 +15,7 @@ module Representative
       @indent_level = 0
       @indent_string = resolve_indentation(options.fetch(:indentation, DEFAULT_INDENTATION))
       @attribute_prefix = options.fetch(:attribute_prefix, DEFAULT_ATTRIBUTE_PREFIX)
+      @encoder = options.fetch(:encoder, ActiveSupport::JSON)
       now_at :beginning_of_buffer
       yield self if block_given?
     end
@@ -112,7 +113,7 @@ module Representative
     end
 
     def encode(data)
-      ActiveSupport::JSON.encode(data)
+      @encoder.encode(data)
     end
 
     def indenting?
