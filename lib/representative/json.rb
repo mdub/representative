@@ -1,10 +1,16 @@
-require "activesupport/json_encoder"
 require "active_support/core_ext/array/extract_options"
 require "representative/base"
+require "json"
 
 module Representative
 
   class Json < Base
+
+    class DefaultEncoder
+      def self.encode(data)
+        ::JSON.dump(data)
+      end
+    end
 
     DEFAULT_ATTRIBUTE_PREFIX = "@".freeze
     DEFAULT_INDENTATION = 2 # two spaces
@@ -15,7 +21,7 @@ module Representative
       @indent_level = 0
       @indent_string = resolve_indentation(options.fetch(:indentation, DEFAULT_INDENTATION))
       @attribute_prefix = options.fetch(:attribute_prefix, DEFAULT_ATTRIBUTE_PREFIX)
-      @encoder = options.fetch(:encoder, ActiveSupport::JSON)
+      @encoder = options.fetch(:encoder, DefaultEncoder)
       now_at :beginning_of_buffer
       yield self if block_given?
     end
