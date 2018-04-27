@@ -73,6 +73,24 @@ describe Representative::Json do
 
         end
 
+
+        describe "and an attribute with a hash value" do
+
+          it "generates labelled fields for the attributes" do
+            @book = OpenStruct.new(:lang => "fr", :title => "En Edge", :author => {:name => 'cc', :age => 36})
+            r.element :book, @book do
+              r.element :author
+            end
+
+            expect(resulting_json).to eq undent(<<-JSON)
+            {
+              "author": {"name":"cc","age":36}
+            }
+            JSON
+          end
+
+        end
+
         describe "and an explicit value" do
 
           it "ignores the attributes" do
