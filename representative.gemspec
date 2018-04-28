@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors = ["Mike Williams"]
   gem.email = "mdub@dogbiscuit.org"
 
-  gem.required_ruby_version = '>= 2.4.3'
+  gem.required_ruby_version = '>= 2.0.0'
 
   gem.version = Representative::VERSION.dup
   gem.platform = Gem::Platform::RUBY
