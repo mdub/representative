@@ -73,7 +73,6 @@ describe Representative::Json do
 
         end
 
-
         describe "and an attribute with a hash value" do
 
           it "generates labelled fields for the attributes" do
