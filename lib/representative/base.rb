@@ -43,7 +43,7 @@ module Representative
         current_subject
       elsif value_generator.kind_of?(Symbol)
         current_subject.send(value_generator) unless current_subject.nil?
-      elsif !value_generator.kind_of?(Hash) && value_generator.respond_to?(:to_proc)
+      elsif value_generator.kind_of?(Proc)
         value_generator.to_proc.call(current_subject) unless current_subject.nil?
       else
         value_generator
