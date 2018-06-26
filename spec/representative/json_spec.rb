@@ -280,6 +280,21 @@ describe Representative::Json do
 
       end
 
+      describe "when value is a Hash" do
+
+        it "renders the Hash as JSON" do
+          @article = OpenStruct.new(:title => "blah", :tags => {:foo => "bar"})
+          r.element :article, @article do
+            r.element :tags
+          end
+          expect(resulting_json).to eq undent(<<-JSON)
+          {
+            "tags": {"foo":"bar"}
+          }
+          JSON
+        end
+      end
+
     end
 
     describe "#attribute" do
