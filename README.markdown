@@ -172,7 +172,7 @@ This registers handlers for "`.xml.rep`" and "`.json.rep`" templates.
 Copyright
 ---------
 
-Copyright (c) 2009-2016 Mike Williams. See LICENSE for details.
+Copyright (c) 2009-2018 Mike Williams. See LICENSE for details.
 
 Similar projects
 ----------------
