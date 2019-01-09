@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.platform = Gem::Platform::RUBY
 
   gem.add_development_dependency("rspec", "~> 3.4.0")
-  gem.add_runtime_dependency("activesupport-json_encoder", ">= 1.1.0")
+  gem.add_runtime_dependency("activesupport", "~> 5.1")
   gem.add_runtime_dependency("i18n", ">= 0.4.1")
   gem.add_runtime_dependency("builder", ">= 2.1.2")
   gem.add_runtime_dependency("nokogiri", ">= 1.4.2")
